@@ -57,33 +57,51 @@ select:focus-visible {
 /* BRAND */
 
 .brand {
+  width: 100%;
   min-height: 112px;
-  padding: 19px 18px;
+  padding: 18px 16px;
   display: flex;
   align-items: center;
-  gap: 13px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 14px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  box-sizing: border-box;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 180ms ease;
 }
 
+.brand:focus-visible {
+  outline: 2px solid #8eb9cf;
+  outline-offset: -3px;
+}
+
+
 .brand-logo {
-  width: 48px;
-  height: 48px;
+  width: 70px;
+  height: 70px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: linear-gradient(145deg, #16a8e8, #149bd9 45%, #25bd83);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: #3b91a8;
+  border: 2px solid rgba(235, 244, 248, 0.8);
   display: grid;
   place-items: center;
   overflow: hidden;
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: none;
 }
+
+
 
 .brand-logo-inner {
   width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
+  background: #6eafc1;
 }
 
 .brand-sun {
@@ -91,11 +109,14 @@ select:focus-visible {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #ffd447;
+  background: #e7ce58;
   top: 8px;
   left: 20px;
-  box-shadow: 0 -7px 0 -3px #ffd447, 0 7px 0 -3px #ffd447,
-    7px 0 0 -3px #ffd447, -7px 0 0 -3px #ffd447;
+  box-shadow:
+    0 -7px 0 -3px #e7ce58,
+    0 7px 0 -3px #e7ce58,
+    7px 0 0 -3px #e7ce58,
+    -7px 0 0 -3px #e7ce58;
 }
 
 .brand-land {
@@ -104,10 +125,10 @@ select:focus-visible {
   right: 5px;
   bottom: 5px;
   height: 18px;
-  background: #16875c;
+  background: #668b66;
   clip-path: polygon(
-    0 85%, 20% 40%, 35% 68%, 52% 15%, 69% 62%, 82% 35%,
-    100% 78%, 100% 100%, 0 100%
+    0 85%, 20% 40%, 35% 68%, 52% 15%,
+    69% 62%, 82% 35%, 100% 78%, 100% 100%, 0 100%
   );
 }
 
@@ -116,6 +137,7 @@ select:focus-visible {
   flex-direction: column;
   line-height: 1.2;
   min-width: 0;
+  flex: 1;
 }
 
 .brand-text strong {
@@ -125,12 +147,28 @@ select:focus-visible {
   white-space: nowrap;
 }
 
-.brand-text span {
-  color: #1aa8ee;
-  font-size: 13px;
+
+.brand-text .brand-abbreviation {
+  font-family: "Arial", "Helvetica Neue", sans-serif;
+  font-size: 27px;
   font-weight: 800;
-  margin-top: 4px;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: #e1eaf2;
   white-space: nowrap;
+}
+
+
+.brand-text .brand-description {
+  display: block;
+  margin-top: 6px;
+  color: #b7c8d8;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: normal;
 }
 
 /* SIDEBAR NAVIGATION */

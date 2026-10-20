@@ -696,20 +696,33 @@ const handleExploreDistrict = () => {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-logo">
-            <div className="brand-logo-inner">
-              <span className="brand-sun" />
-              <span className="brand-land" />
-            </div>
-          </div>
+        
+<button
+  type="button"
+  className="brand"
+  onClick={() => setActivePage("dashboard")}
+  aria-label="Go to Dashboard"
+>
+  <div className="brand-logo">
+    <div className="brand-logo-inner">
+      <span className="brand-sun" />
+      <span className="brand-land" />
+    </div>
+  </div>
 
-          <div className="brand-text">
-            <strong>Rwanda Poverty &amp;</strong>
-            <strong>Financial Vulnerability</strong>
-            <span>Intelligence Platform</span>
-          </div>
-        </div>
+  <div className="brand-text">
+    <strong className="brand-abbreviation">RP-FVIP</strong>
+
+    <span className="brand-description">
+      Rwanda Poverty &amp; Financial
+      <br />
+      Vulnerability Intelligence
+      <br />
+      Platform
+    </span>
+  </div>
+</button>
+
 
         <nav className="sidebar-nav">
           {navigation.map((item) => (

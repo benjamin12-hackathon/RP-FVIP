@@ -1,0 +1,5 @@
+hhid,province,household_size,household_size_group,education_years,education_level,has_financial_account,financial_access,poverty_status,poverty_group
+1001,Kigali,4.0,Medium,12,Secondary,1,Has access,0,Non-poor
+1002,Southern,6.0,Medium,6,Primary,0,No access,1,Poor
+1003,Western,,Unknown,9,Secondary,1,Has access,0,Non-poor
+1004,Eastern,5.0,Medium,3,Primary,0,No access,1,Poor

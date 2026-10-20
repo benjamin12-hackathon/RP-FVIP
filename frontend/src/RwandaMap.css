@@ -1,0 +1,672 @@
+.rwanda-map-page {
+  --map-ink: #172b4d;
+  --map-muted: #718096;
+  --map-border: #e5eaf2;
+  --map-blue: #2463eb;
+  color: var(--map-ink);
+  width: 100%;
+  min-width: 0;
+}
+
+.rwanda-map-page * {
+  box-sizing: border-box;
+}
+
+.rwanda-map-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.rwanda-map-title-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 15px;
+  color: #2563eb;
+  background: #eaf1ff;
+  font-size: 32px;
+}
+
+.rwanda-map-eyebrow {
+   display: block;
+  color: #1689db;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-align: center;
+}
+
+.rwanda-map-heading h1 {
+ margin: 0;
+  color: #0b3558;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 750;
+  letter-spacing: -0.8px;
+}
+
+.rwanda-map-heading > div:last-child > p:last-child {
+  margin: 7px 0 0;
+  color: var(--map-muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.rwanda-map-filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  padding: 17px;
+  margin-bottom: 20px;
+  border: 1px solid var(--map-border);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(23, 43, 77, 0.035);
+}
+
+.rwanda-map-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rwanda-map-filters label > span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.rwanda-map-filters select {
+  width: 100%;
+  min-width: 0;
+  height: 41px;
+  padding: 0 10px;
+  border: 1px solid #dfe6ef;
+  border-radius: 9px;
+  color: #263752;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.rwanda-map-filters select:focus {
+  border-color: #6495f7;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.rwanda-map-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.85fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.rwanda-map-card,
+.district-intelligence {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--map-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 22px rgba(23, 43, 77, 0.045);
+}
+
+.rwanda-map-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 21px 21px 15px;
+}
+
+.rwanda-map-card-header h2,
+.intelligence-header h2 {
+  margin: 0;
+  color: #172b4d;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.rwanda-map-card-header p,
+.intelligence-header > div > p:last-child {
+  margin: 6px 0 0;
+  color: var(--map-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.demo-badge {
+  flex-shrink: 0;
+  padding: 7px 9px;
+  border-radius: 20px;
+  color: #975a16;
+  background: #fff4dc;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.rwanda-map-canvas {
+  position: relative;
+  min-height: 480px;
+  margin: 0 13px;
+  overflow: hidden;
+  border: 1px solid #e7edf5;
+  border-radius: 13px;
+  background:
+    radial-gradient(ellipse at center, rgba(219, 234, 254, 0.6), transparent 68%),
+    #f7faff;
+}
+
+.rwanda-map-svg {
+  position: absolute;
+  inset: 14px 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 28px);
+  overflow: visible;
+}
+
+.district-shape {
+  stroke: #fff;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: filter 0.15s ease, stroke-width 0.15s ease;
+}
+
+.district-shape:hover,
+.district-shape:focus-visible {
+  filter: brightness(0.92);
+  stroke: #183b70;
+  stroke-width: 2;
+  outline: none;
+}
+
+.district-shape.selected {
+  stroke: #172b4d;
+  stroke-width: 2.3;
+}
+
+.neighbor-label {
+  position: absolute;
+  z-index: 1;
+  color: #9aa9bb;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  pointer-events: none;
+}
+
+.neighbor-uganda {
+  top: 15px;
+  left: 46%;
+}
+
+.neighbor-drc {
+  top: 47%;
+  left: 9px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.neighbor-tanzania {
+  top: 48%;
+  right: 7px;
+  writing-mode: vertical-rl;
+}
+
+.neighbor-burundi {
+  bottom: 13px;
+  left: 45%;
+}
+
+.map-compass {
+ position: absolute;
+  top: 12px;
+  left: 95%;
+  transform: translateX(-50%);
+  z-index: 4;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+
+  width: 40px;
+  height: 48px;
+  box-sizing: border-box;
+
+  border: 1px solid #dce6f2;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #174c70;
+  box-shadow: 0 3px 10px rgba(23, 43, 77, 0.07);
+
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.map-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 25px;
+  color: #64748b;
+  font-size: 13px;
+  text-align: center;
+}
+
+.map-zoom-controls {
+  position: absolute;
+  z-index: 3;
+  right: 13px;
+  bottom: 14px;
+  display: grid;
+  gap: 5px;
+}
+
+.map-zoom-controls button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dce5f0;
+  border-radius: 9px;
+  color: #304b72;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(23, 43, 77, 0.08);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.map-zoom-controls button:hover {
+  color: #fff;
+  border-color: var(--map-blue);
+  background: var(--map-blue);
+}
+
+.rwanda-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 15px;
+  padding: 17px 20px 10px;
+}
+
+.rwanda-map-legend > strong {
+  width: 100%;
+  font-size: 11px;
+}
+
+.rwanda-map-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #5d6c81;
+  font-size: 10px;
+}
+
+.rwanda-map-legend i,
+.compare-row > i {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+.rwanda-map-disclaimer {
+  margin: 8px 20px 20px;
+  padding-top: 12px;
+  border-top: 1px solid #edf1f6;
+  color: #7a8798;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.district-intelligence {
+  padding: 20px;
+}
+
+.intelligence-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #edf1f6;
+}
+
+.intelligence-header h2 {
+  font-size: 20px;
+  letter-spacing: -0.5px;
+}
+
+.selected-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: #27966f;
+  box-shadow: 0 0 0 4px #e3f6ed;
+}
+
+.intelligence-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-top: 13px;
+  padding: 15px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+
+.intelligence-stat > span {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 20px;
+}
+
+.intelligence-stat p {
+  margin: 0 0 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.intelligence-stat strong {
+  display: block;
+  font-size: 23px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.intelligence-stat small {
+  display: block;
+  margin-top: 5px;
+  color: #66758a;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.poverty-stat {
+  color: #a8343b;
+  border-color: #f7d9da;
+  background: #fff1f1;
+}
+
+.mpi-stat {
+  color: #245ab4;
+  border-color: #dbe8ff;
+  background: #eff5ff;
+}
+
+.finance-stat {
+  color: #7041a4;
+  border-color: #eadcff;
+  background: #f7f1ff;
+}
+
+.deprivation-panel,
+.compare-panel {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #edf1f6;
+}
+
+.deprivation-panel h3,
+.compare-panel h3 {
+  margin: 0;
+  color: #223653;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.deprivation-panel > p {
+  margin: 7px 0 15px;
+  color: #8793a3;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.deprivation-row {
+  margin-top: 13px;
+}
+
+.deprivation-row > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 7px;
+  color: #5e6d81;
+  font-size: 11px;
+}
+
+.deprivation-row strong {
+  color: #273b58;
+  font-size: 11px;
+}
+
+.deprivation-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #edf1f6;
+}
+
+.deprivation-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6797ef, #3470de);
+}
+
+.compare-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.compare-panel h3 {
+  margin-bottom: 2px;
+}
+
+.compare-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: #596a80;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.compare-row span {
+  flex: 1;
+}
+
+.compare-row b {
+  color: #8190a4;
+  font-size: 16px;
+}
+
+.why-map-matters {
+  display: flex;
+ align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 21px;
+  border: 1px solid #dfe9fa;
+  border-radius: 15px;
+  background: linear-gradient(110deg, #f1f6ff, #fff);
+  text-align: center;
+}
+
+.why-map-icon {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  color: #2e64c5;
+  background: #e1ebff;
+  font-size: 23px;
+}
+
+.why-map-matters h2 {
+  margin: 0;
+  color: #1c3558;
+  font-size: 14px;
+  text-align: center;
+}
+
+.why-map-matters p {
+  max-width: 720px;
+  margin: 7px 0 0;
+  color: #62748d;
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.why-map-note {
+    display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 135px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #d5e5f4;
+  border-left: 4px solid #0261c0;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(9, 47, 85, 0.06);
+  flex-shrink: 0;
+  color: #66819a;
+  font-size: 13px;
+  text-align: left;
+  white-space: normal;
+}
+
+.why-map-note strong {
+  color: #2858a6;
+}
+
+.why-map-note span {
+  color: #74849a;
+  line-height: 1.5;
+}
+
+.rwanda-map-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 16px 2px 5px;
+  border-top: 1px solid #e8edf4;
+  color: #8591a1;
+  font-size: 10px;
+}
+
+@media (max-width: 1150px) {
+  .rwanda-map-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .district-intelligence {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .intelligence-header,
+  .deprivation-panel,
+  .compare-panel {
+    grid-column: 1 / -1;
+  }
+
+  .intelligence-stat {
+    margin-top: 0;
+  }
+
+  .deprivation-panel,
+  .compare-panel {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 760px) {
+  .rwanda-map-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 13px;
+  }
+
+  .rwanda-map-filters label:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .rwanda-map-card-header {
+    flex-direction: column;
+  }
+
+  .rwanda-map-canvas {
+    min-height: 390px;
+  }
+
+  .district-intelligence {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .intelligence-stat {
+    margin-top: 0;
+  }
+
+  .why-map-matters {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+
+  .why-map-note {
+    width: 100%;
+    margin: 5px 0 0;
+    padding: 12px 0 0;
+    border-top: 1px solid #dbe5f5;
+    border-left: 0;
+  }
+
+  .rwanda-map-footer {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 420px) {
+  .rwanda-map-heading {
+    align-items: flex-start;
+  }
+
+  .rwanda-map-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .rwanda-map-filters label:last-child {
+    grid-column: auto;
+  }
+
+  .rwanda-map-canvas {
+    min-height: 330px;
+  }
+}

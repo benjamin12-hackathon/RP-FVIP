@@ -1,0 +1,5 @@
+hhid,province,household_size,education_years,has_financial_account,poverty_status,invalid_household_size
+1001,Kigali,4.0,12,1,0,False
+1002,Southern,6.0,6,0,1,False
+1003,Western,,9,1,0,True
+1004,Eastern,5.0,3,0,1,False

@@ -1,4 +1,4 @@
-# RP-FVIP — Data and Analytical Methodology
+# RP-FVIP / Data and Analytical Methodology
 
 ## 1. Purpose
 
@@ -115,7 +115,7 @@ Because the demonstration dataset is small, these results may be sensitive to th
 Before drawing conclusions about model performance, further evaluation should document:
 
 - The dataset and target definition used.
-- The train-test splitting procedure and random seed, where applicable.
+- The train-test splitting procedure and random seed where applicable.
 - The number and distribution of positive and negative cases.
 - The predictors supplied to each model.
 - The treatment of missing values and categorical variables.

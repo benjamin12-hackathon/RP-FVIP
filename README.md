@@ -189,7 +189,7 @@ The platform currently uses demonstration data. Integration of authorized offici
 
 ---
 
-**Project:** RP-FVIP — Rwanda Poverty & Financial Vulnerability Intelligence Platform  
+**Project:** RP-FVIP / Rwanda Poverty & Financial Vulnerability Intelligence Platform  
 **Repository:** https://github.com/benjamin12-hackathon/RP-FVIP  
 **Live Demo:** https://rp-fvip.vercel.app/
 

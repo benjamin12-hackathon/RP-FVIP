@@ -7,6 +7,8 @@ import MultidimensionalPoverty from "./MultidimensionalPoverty";
 import FinancialInclusion from "./FinancialInclusion";
 import RwandaMap from "./RwandaMap";
 import InsightsReports from "./InsightsReports";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 const navigation = [
   { id: "dashboard", icon: "dashboard", label: "Dashboard" },
@@ -544,19 +546,21 @@ useEffect(() => {
 
       const selectedProvince = encodeURIComponent(province);
 
-      const [summaryResponse, provinceResponse] = await Promise.all([
-        fetch(
-          `http://127.0.0.1:8000/api/dashboard/summary?province=${selectedProvince}`,
-          { signal: controller.signal }
-        ),
-        fetch("http://127.0.0.1:8000/api/poverty/province", {
-          signal: controller.signal,
-        }),
-      ]);
+     
+const [summaryResponse, provinceResponse] = await Promise.all([
+  fetch(
+    `${API_BASE_URL}/api/dashboard/summary?province=${encodeURIComponent(selectedProvince)}`,
+    { signal: controller.signal }
+  ),
+  fetch(`${API_BASE_URL}/api/poverty/province`, {
+    signal: controller.signal,
+  }),
+]);
 
-      if (!summaryResponse.ok || !provinceResponse.ok) {
-        throw new Error("Could not load dashboard data.");
-      }
+if (!summaryResponse.ok || !provinceResponse.ok) {
+  throw new Error("Could not load dashboard data.");
+}
+
 
      
 const summary = await summaryResponse.json();

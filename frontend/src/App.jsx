@@ -754,12 +754,6 @@ const handleExploreDistrict = () => {
             <p>Better decisions.</p>
             <p>A stronger Rwanda.</p>
           </div>
-          <div className="rwanda-flag">
-            <span className="flag-blue" />
-            <span className="flag-yellow" />
-            <span className="flag-green" />
-            <span className="flag-sun" />
-          </div>
         </div>
       </aside>
 

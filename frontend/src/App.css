@@ -301,18 +301,6 @@ select:focus-visible {
   display: none;
 }
 
-/* RWANDA FLAG */
-
-.rwanda-flag {
-  position: relative;
-  z-index: 3;
-  width: 31px;
-  height: 21px;
-  margin-top: 15px;
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
-}
 
 .flag-blue,
 .flag-yellow,

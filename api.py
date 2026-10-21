@@ -271,7 +271,15 @@ def dashboard_summary(province: str = "All Provinces"):
                   AND reference_period = '2024'
                 LIMIT 1
                 """,
-                (province,),
+                (
+    {
+        "Northern": "Northern Province",
+        "Southern": "Southern Province",
+        "Eastern": "Eastern Province",
+        "Western": "Western Province",
+        "Kigali": "Kigali City",
+    }.get(province, province),
+),
             ).fetchone()
 
             return round(100 - row[0], 1) if row else None

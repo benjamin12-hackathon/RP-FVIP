@@ -305,7 +305,29 @@ def dashboard_summary(province: str = "All Provinces"):
     finally:
         conn.close()
 
+@app.get("/api/debug/finscope-provinces")
+def debug_finscope_provinces():
+    conn = get_connection()
+    try:
+        rows = conn.execute("""
+            SELECT geography_name, indicator, value
+            FROM official_indicators
+            WHERE source = 'FinScope 2024'
+              AND indicator = 'Excluded'
+              AND geography_level = 'Province'
+            ORDER BY geography_name
+        """).fetchall()
 
+        return [
+            {
+                "province": row[0],
+                "indicator": row[1],
+                "value": row[2],
+            }
+            for row in rows
+        ]
+    finally:
+        conn.close()
         
 @app.get("/api/dashboard/modules")
 def dashboard_modules(province: str = "All Provinces"):

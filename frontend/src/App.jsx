@@ -359,6 +359,66 @@ const hasUnreadNotifications = notifications.some((n) => !n.read);
 const [dashboardSummary, setDashboardSummary] = useState(null);
 const [provinceChartData, setProvinceChartData] = useState([]);
 const [summaryLoading, setSummaryLoading] = useState(true);
+
+
+useEffect(() => {
+  const controller = new AbortController();
+
+  async function loadOfficialDistrictData() {
+    try {
+      setOfficialDistrictLoading(true);
+      setOfficialDistrictError("");
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/poverty/district`,
+        { signal: controller.signal }
+      );
+
+      if (!response.ok) {
+        throw new Error("Could not load official district poverty data.");
+      }
+
+      const payload = await response.json();
+      const rows = Array.isArray(payload)
+        ? payload
+        : payload.value ?? [];
+
+      const validRows = rows.filter(
+        (item) =>
+          item.district &&
+          item.source ===
+            "National Institute of Statistics of Rwanda (NISR)" &&
+          item.reference_period === "2023-2024" &&
+          item.poverty_rate != null &&
+          Number.isFinite(Number(item.poverty_rate))
+      );
+
+      setOfficialDistrictData(validRows);
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Official district data error:", error);
+        setOfficialDistrictError(
+          "Official district poverty data could not be loaded."
+        );
+        setOfficialDistrictData([]);
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setOfficialDistrictLoading(false);
+      }
+    }
+  }
+
+  loadOfficialDistrictData();
+
+  return () => controller.abort();
+}, []);
+
+
+const [officialDistrictData, setOfficialDistrictData] = useState([]);
+const [officialDistrictLoading, setOfficialDistrictLoading] = useState(true);
+const [officialDistrictError, setOfficialDistrictError] = useState("");
+
 const [summaryError, setSummaryError] = useState("");
 const [moduleData, setModuleData] = useState(null);
 const [moduleLoading, setModuleLoading] = useState(true);
@@ -440,7 +500,7 @@ useEffect(() => {
       setModuleError("");
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/dashboard/modules?province=${encodeURIComponent(province)}`,
+        `${API_BASE_URL}/api/dashboard/modules?province=${encodeURIComponent(province)}`,
         { signal: controller.signal }
       );
 
@@ -478,7 +538,7 @@ useEffect(() => {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/health"
+        `${API_BASE_URL}/api/health`
       );
 
       if (!response.ok) {
@@ -544,18 +604,18 @@ useEffect(() => {
       setSummaryLoading(true);
       setSummaryError("");
 
-      const selectedProvince = encodeURIComponent(province);
+const selectedProvince = encodeURIComponent(province);
 
-     
 const [summaryResponse, provinceResponse] = await Promise.all([
   fetch(
-    `${API_BASE_URL}/api/dashboard/summary?province=${encodeURIComponent(selectedProvince)}`,
+    `${API_BASE_URL}/api/dashboard/summary?province=${selectedProvince}`,
     { signal: controller.signal }
   ),
   fetch(`${API_BASE_URL}/api/poverty/province`, {
     signal: controller.signal,
   }),
 ]);
+
 
 if (!summaryResponse.ok || !provinceResponse.ok) {
   throw new Error("Could not load dashboard data.");
@@ -593,12 +653,7 @@ setProvinceChartData(
   }
 
   loadDashboardData();
-const displayPercent = (value) =>
-  moduleLoading
-    ? "…"
-    : value == null
-      ? "—"
-      : `${Number(value).toFixed(1)}%`;
+
   return () => controller.abort();
 }, [province]);
 
@@ -623,29 +678,45 @@ const selectionHasUnsupportedFilters =
 const summaryIsAvailable =
   dashboardSummary && !selectionHasUnsupportedFilters;
 
+
 const kpis = {
   poverty:
     summaryLoading
       ? "Loading…"
-      : summaryIsAvailable && dashboardSummary.poverty_rate !== null
-        ? `${dashboardSummary.poverty_rate.toFixed(1)}%`
+      : summaryIsAvailable && dashboardSummary.poverty_rate != null
+        ? `${Number(dashboardSummary.poverty_rate).toFixed(1)}%`
         : "—",
 
-  extreme: "—",
-  mpi: "—",
+  extreme:
+    summaryLoading
+      ? "Loading…"
+      : summaryIsAvailable &&
+          dashboardSummary.extreme_poverty_rate != null
+        ? `${Number(dashboardSummary.extreme_poverty_rate).toFixed(1)}%`
+        : "—",
+
+  mpi:
+    summaryLoading
+      ? "Loading…"
+      : summaryIsAvailable && dashboardSummary.mpi_incidence != null
+        ? `${Number(dashboardSummary.mpi_incidence).toFixed(1)}%`
+        : "—",
 
   financial:
     summaryLoading
       ? "Loading…"
       : summaryIsAvailable &&
-          dashboardSummary.financial_inclusion_rate !== null
-        ? `${dashboardSummary.financial_inclusion_rate.toFixed(1)}%`
+          dashboardSummary.financial_inclusion_rate != null
+        ? `${Number(dashboardSummary.financial_inclusion_rate).toFixed(1)}%`
         : "—",
 
   scope: summaryIsAvailable
-    ? `${dashboardSummary.household_count} demo households`
+    ? dashboardSummary.household_count != null
+      ? `${dashboardSummary.household_count} households`
+      : `${dashboardSummary.poverty_source || "Official statistics"} · ${dashboardSummary.reference_period || "Period not specified"}`
     : "No verified data for this selection",
 };
+
 
 const selectionScope = getSelectionScope(
   province,
@@ -1111,9 +1182,19 @@ const handleExploreDistrict = () => {
 <div className="rwanda-map-card-header">
   <div>
     <h2>Poverty Rate by District</h2>
-    <p>Illustrative demo values - not official district estimates</p>
+    <p>
+  NISR EICV7 monetary poverty rate · 2023–2024
+</p>
   </div>
-  <span className="demo-badge">Illustrative demo data</span>
+  <span className="demo-badge">
+  {officialDistrictLoading
+    ? "Loading official data…"
+    : officialDistrictError
+      ? "Official data unavailable"
+      : officialDistrictData.length === 30
+        ? "Official NISR data"
+        : "Official data incomplete"}
+</span>
 </div>
 
 
@@ -1163,21 +1244,24 @@ const handleExploreDistrict = () => {
       220 * (1 - dashboardMapZoom)
     }) scale(${dashboardMapZoom})`}
   >
-                            {districtMapFeatures.map((feature, index) => {
-                              const name = getDistrictName(feature);
-                              if (!name) return null;
+  {districtMapFeatures.map((feature, index) => {
+  const name = getDistrictName(feature);
+  if (!name) return null;
 
-                              const demoDistrict = districts.find(
-                                (item) =>
-                                  normalizeName(item.name) === normalizeName(name)
-                              );
+                              
+const officialDistrict = officialDistrictData.find(
+  (item) =>
+    normalizeName(item.district) === normalizeName(name)
+);
 
-                              const value = Number(demoDistrict?.value);
-                              const hasValue =
-                                demoDistrict &&
-                                demoDistrict.value !== null &&
-                                demoDistrict.value !== "" &&
-                                Number.isFinite(value);
+const value =
+  officialDistrict != null
+    ? Number(officialDistrict.poverty_rate)
+    : null;
+
+const hasValue =
+  value !== null && Number.isFinite(value);
+
 
                               const isSelected =
                                 normalizeName(selectedDistrict) === normalizeName(name);
@@ -1204,11 +1288,13 @@ const handleExploreDistrict = () => {
                                   }`}
                                   role="button"
                                   tabIndex={0}
-                                  aria-label={
-                                    hasValue
-                                      ? `${name} District, demo poverty value ${value}%`
-                                      : `${name} District, no demo value available`
-                                  }
+                                  
+aria-label={
+  hasValue
+    ? `${name} District, official NISR poverty rate ${value}%`
+    : `${name} District, official poverty rate unavailable`
+}
+
                                   aria-pressed={isSelected}
                                   onClick={() => setSelectedDistrict(name)}
                                   onKeyDown={(event) => {
@@ -1218,15 +1304,16 @@ const handleExploreDistrict = () => {
                                     }
                                   }}
                                 >
-                                  <title>
-                                    {hasValue
-                                      ? `${name} District - illustrative demo poverty estimate: ${value}%`
-                                      : `${name} District - No demo estimate`}
-                                  </title>
-                                </path>
-                              );
-                               })}
-  </g>
+                                  
+<title>
+  {hasValue
+    ? `${name} District - NISR EICV7 poverty rate: ${value}%`
+    : `${name} District - Official poverty rate unavailable`}
+</title>
+</path>
+);
+})}
+</g>
 </svg>
 <div className="dashboard-map-controls">
   <button

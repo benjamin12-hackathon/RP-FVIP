@@ -102,37 +102,62 @@ def get_households():
 
 @app.get("/api/poverty/province")
 def poverty_by_province():
-
     conn = get_connection()
-
     try:
-        cursor = conn.execute(
-            """
+        cursor = conn.execute("""
             SELECT
-                province,
-                COUNT(*) AS households,
-                ROUND(
-                    AVG(poverty_status) * 100,
-                    2
-                ) AS poverty_rate
-            FROM households
-            GROUP BY province
-            ORDER BY poverty_rate DESC
-            """
-        )
+                geography_name AS province,
+                NULL AS households,
+                value AS poverty_rate
+            FROM official_indicators
+            WHERE indicator = 'Poverty Rate'
+              AND geography_level = 'Province'
+              AND source = 'National Institute of Statistics of Rwanda (NISR)'
+              AND reference_period = '2023-2024'
+            ORDER BY
+                CASE geography_name
+                    WHEN 'Northern' THEN 1
+                    WHEN 'Eastern' THEN 2
+                    WHEN 'Southern' THEN 3
+                    WHEN 'Western' THEN 4
+                    WHEN 'Kigali' THEN 5
+                    ELSE 6
+                END
+        """)
 
         columns = [column[0] for column in cursor.description]
-
         rows = cursor.fetchall()
 
-        return [
-            dict(zip(columns, row))
-            for row in rows
-        ]
-
+        return [dict(zip(columns, row)) for row in rows]
     finally:
         conn.close()
 
+
+
+@app.get("/api/poverty/district")
+def poverty_by_district():
+    conn = get_connection()
+    try:
+        cursor = conn.execute("""
+            SELECT
+                geography_name AS district,
+                value AS poverty_rate,
+                source,
+                reference_period
+            FROM official_indicators
+            WHERE indicator = 'Poverty Rate'
+              AND geography_level = 'District'
+              AND source = 'National Institute of Statistics of Rwanda (NISR)'
+              AND reference_period = '2023-2024'
+            ORDER BY geography_name
+        """)
+
+        columns = [column[0] for column in cursor.description]
+        rows = cursor.fetchall()
+
+        return [dict(zip(columns, row)) for row in rows]
+    finally:
+        conn.close()
 
 # --------------------------------------------------
 # 4. Financial Access
@@ -171,31 +196,107 @@ def financial_access():
         conn.close()
 
         
+
+
 @app.get("/api/dashboard/summary")
 def dashboard_summary(province: str = "All Provinces"):
     conn = get_connection()
+
     try:
-        query = """
-            SELECT
-                COUNT(*) AS household_count,
-                AVG(poverty_status) * 100 AS poverty_rate,
-                AVG(has_financial_account) * 100 AS financial_inclusion_rate
-            FROM households
-            WHERE (? = 'All Provinces' OR province = ?)
-        """
-        row = conn.execute(query, (province, province)).fetchone()
+        is_national = province == "All Provinces"
+        geography_level = "National" if is_national else "Province"
+
+        # EICV7 uses shortened province names.
+        eicv7_province_names = {
+            "Kigali City": "Kigali",
+            "Northern Province": "Northern",
+            "Southern Province": "Southern",
+            "Eastern Province": "Eastern",
+            "Western Province": "Western",
+        }
+
+        eicv7_geography_name = (
+            "Rwanda"
+            if is_national
+            else eicv7_province_names.get(province, province)
+        )
+
+        def get_indicator(indicator_name):
+            row = conn.execute(
+                """
+                SELECT value
+                FROM official_indicators
+                WHERE indicator = ?
+                  AND geography_level = ?
+                  AND geography_name = ?
+                  AND source =
+                      'National Institute of Statistics of Rwanda (NISR)'
+                  AND reference_period = '2023-2024'
+                LIMIT 1
+                """,
+                (
+                    indicator_name,
+                    geography_level,
+                    eicv7_geography_name,
+                ),
+            ).fetchone()
+
+            return row[0] if row else None
+
+        def get_financial_inclusion():
+            if is_national:
+                row = conn.execute(
+                    """
+                    SELECT value
+                    FROM official_indicators
+                    WHERE indicator = 'Financial Inclusion'
+                      AND geography_level = 'National'
+                      AND geography_name = 'Rwanda'
+                      AND source = 'FinScope 2024'
+                      AND reference_period = '2024'
+                    LIMIT 1
+                    """
+                ).fetchone()
+
+                return row[0] if row else None
+
+            row = conn.execute(
+                """
+                SELECT value
+                FROM official_indicators
+                WHERE indicator = 'Excluded'
+                  AND geography_level = 'Province'
+                  AND geography_name = ?
+                  AND source = 'FinScope 2024'
+                  AND reference_period = '2024'
+                LIMIT 1
+                """,
+                (province,),
+            ).fetchone()
+
+            return round(100 - row[0], 1) if row else None
 
         return {
             "province": province,
-            "household_count": row[0] or 0,
-            "poverty_rate": round(row[1], 2) if row[1] is not None else None,
-            "financial_inclusion_rate": (
-                round(row[2], 2) if row[2] is not None else None
+            "household_count": None,
+            "poverty_rate": get_indicator("Poverty Rate"),
+            "extreme_poverty_rate": get_indicator(
+                "Extreme Poverty Rate"
             ),
-            "data_status": "demo",
+            "mpi_incidence": get_indicator("MPI Incidence"),
+            "mpi_intensity": get_indicator("MPI Intensity"),
+            "mpi_index": get_indicator("MPI Index"),
+            "financial_inclusion_rate": get_financial_inclusion(),
+            "financial_inclusion_source": "FinScope 2024",
+            "financial_inclusion_reference_period": "2024",
+            "data_status": "official_partial",
+            "poverty_source": "NISR EICV7",
+            "reference_period": "2023-2024",
         }
+
     finally:
         conn.close()
+
 
         
 @app.get("/api/dashboard/modules")

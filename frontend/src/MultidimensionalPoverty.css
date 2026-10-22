@@ -36,7 +36,7 @@
 .mpi-header p {
   margin: 9px 0 0;
   color: #71869a;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.7;
 }
 
@@ -342,5 +342,701 @@
 
   .mpi-footer > span {
     text-align: left;
+  }
+}
+
+/* ==========================================
+   MPI PROFESSIONAL DESIGN ENHANCEMENTS
+   Scoped to Multidimensional Poverty only
+   ========================================== */
+
+.mpi-page {
+  --mpi-primary: #168de0;
+  --mpi-navy: #123e60;
+  --mpi-muted: #758ba0;
+  --mpi-border: #e0eaf3;
+  --mpi-surface: #ffffff;
+}
+
+/* Improve summary KPI cards */
+.mpi-page .mpi-summary-card {
+  position: relative;
+  overflow: hidden;
+  padding: 25px 23px 23px;
+  border-color: var(--mpi-border);
+  border-radius: 17px;
+  box-shadow: 0 5px 18px rgba(20, 57, 86, 0.045);
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.mpi-page .mpi-summary-card:hover {
+  transform: translateY(-3px);
+  border-color: #c7dff1;
+  box-shadow: 0 10px 24px rgba(20, 57, 86, 0.075);
+}
+
+.mpi-page .mpi-card-label {
+  color: #617f99;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.mpi-page .mpi-summary-card > strong {
+  color: var(--mpi-navy);
+  font-size: clamp(25px, 2vw, 31px);
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mpi-page .mpi-summary-card > .mpi-unavailable {
+  color: #946b2f;
+  font-size: 19px;
+  letter-spacing: 0;
+}
+
+.mpi-page .mpi-card-footnote {
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* Dimensions section */
+.mpi-page .mpi-section-heading {
+  margin-bottom: 20px;
+}
+
+.mpi-page .mpi-section-heading h2,
+.mpi-page .mpi-methodology h2 {
+  color: #163f60;
+  letter-spacing: -0.25px;
+}
+
+.mpi-page .mpi-count {
+  padding: 9px 12px;
+  border-color: #dce8f2;
+  border-radius: 10px;
+  background: #f7fbff;
+  color: #426985;
+}
+
+/* Dimension cards */
+.mpi-page .mpi-dimension-grid {
+  align-items: stretch;
+  gap: 18px;
+}
+
+.mpi-page .mpi-dimension-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 275px;
+  padding: 21px;
+  border-color: var(--mpi-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(20, 57, 86, 0.025);
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.mpi-page .mpi-dimension-card:hover {
+  transform: translateY(-3px);
+  border-color: #b9d9ef;
+  box-shadow: 0 10px 24px rgba(20, 57, 86, 0.07);
+}
+
+.mpi-page .mpi-dimension-top {
+  margin-bottom: 22px;
+}
+
+/* SVG icon container — JSX should render SVG icons inside this element */
+.mpi-page .mpi-dimension-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid #dcecff;
+  border-radius: 13px;
+  background: #edf5ff;
+  color: #2678bd;
+  font-size: inherit;
+}
+
+.mpi-page .mpi-dimension-icon svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mpi-page .mpi-status {
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 10px;
+  letter-spacing: 0.1px;
+}
+
+.mpi-page .mpi-status-available {
+  border-color: #ccebd9;
+  background: #effaf3;
+  color: #237548;
+}
+
+.mpi-page .mpi-status-missing {
+  border-color: #e5eaf0;
+  background: #f4f6f9;
+  color: #748397;
+}
+
+.mpi-page .mpi-dimension-card h3 {
+  color: #1c4261;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.mpi-page .mpi-dimension-card > p {
+  color: #7b8fa2;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.mpi-page .mpi-dimension-value {
+  margin-top: auto;
+  padding-top: 22px;
+  color: #204f75;
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mpi-page .mpi-dimension-footnote {
+  color: #8496a8;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+/* Indicator availability notice */
+.mpi-page .mpi-notice {
+  padding: 21px 23px;
+  gap: 15px;
+  border-color: #d4e7f7;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f4faff, #ffffff);
+}
+
+.mpi-page .mpi-notice-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d5eaff;
+  border-radius: 12px;
+  background: #e8f4ff;
+  color: #2478b8;
+  font-size: inherit;
+  flex-shrink: 0;
+}
+
+.mpi-page .mpi-notice-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.9;
+}
+
+.mpi-page .mpi-notice strong {
+  color: #214d70;
+  font-size: 14px;
+}
+
+.mpi-page .mpi-notice p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* Methodology panel */
+.mpi-page .mpi-methodology {
+  padding: 25px;
+  border-color: var(--mpi-border);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #ffffff, #f8fbfe);
+  box-shadow: 0 4px 15px rgba(20, 57, 86, 0.025);
+}
+
+.mpi-page .mpi-methodology h2 {
+  font-size: 19px;
+}
+
+.mpi-page .mpi-methodology p {
+  color: #71869a;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+/* Footer */
+.mpi-page .mpi-footer {
+  gap: 20px;
+  padding-top: 20px;
+  color: #7c91a4;
+}
+
+.mpi-page .mpi-footer > div strong {
+  color: #245779;
+  font-weight: 800;
+}
+
+.mpi-page .mpi-back-button {
+  min-height: 42px;
+  padding: 10px 18px;
+  border-color: #d4e3ef;
+  border-radius: 11px;
+  color: #245779;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.mpi-page .mpi-back-button:hover {
+  border-color: #a8cbe4;
+  background: #f0f8ff;
+}
+
+/* Responsive refinements */
+@media (max-width: 1000px) {
+  .mpi-page .mpi-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mpi-page .mpi-dimension-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .mpi-page .mpi-header {
+    padding: 25px 18px 28px;
+  }
+
+  .mpi-page .mpi-summary-grid,
+  .mpi-page .mpi-dimension-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mpi-page .mpi-summary-card {
+    padding: 21px;
+  }
+
+  .mpi-page .mpi-dimension-card {
+    min-height: 245px;
+  }
+
+  .mpi-page .mpi-methodology {
+    padding: 20px;
+  }
+
+  .mpi-page .mpi-notice {
+    padding: 17px;
+  }
+
+  .mpi-page .mpi-footer {
+    gap: 13px;
+  }
+}
+
+
+/* Official MPI indicator presentation */
+.mpi-page .mpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.mpi-page .mpi-header h1 {
+  color: #163f60;
+  font-size: clamp(25px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.mpi-page .mpi-source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 9px 13px;
+  border: 1px solid #d5e8f6;
+  border-radius: 10px;
+  background: #f0f8ff;
+  color: #2a648b;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.mpi-page .mpi-summary-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.mpi-page .mpi-summary-top .mpi-card-label {
+  margin: 0;
+}
+
+.mpi-page .mpi-summary-icon,
+.mpi-page .mpi-methodology-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #dcecff;
+  border-radius: 12px;
+  background: #edf5ff;
+  color: #2678bd;
+}
+
+.mpi-page .mpi-methodology-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.mpi-page .mpi-methodology-heading h2 {
+  margin: 0;
+}
+
+.mpi-page .mpi-methodology-subtitle {
+  margin: 6px 0 0;
+  color: #8092a4;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.mpi-page .mpi-notice-icon {
+  font-size: inherit;
+}
+
+.mpi-page .mpi-notice-icon svg,
+.mpi-page .mpi-summary-icon svg,
+.mpi-page .mpi-methodology-icon svg,
+.mpi-page .mpi-source-badge svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.mpi-page .mpi-dimension-value {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .mpi-page .mpi-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mpi-page .mpi-source-badge {
+    align-self: flex-start;
+  }
+
+  .mpi-page .mpi-methodology-heading {
+    align-items: flex-start;
+  }
+}
+
+
+/* ==========================================
+   MPI METHODOLOGY — CLEAN EDITORIAL LAYOUT
+   ========================================== */
+
+.mpi-page .mpi-methodology {
+  padding: 28px;
+  margin-bottom: 25px;
+  border: 1px solid #dce8f2;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 5px 20px rgba(22, 63, 96, 0.045);
+}
+
+.mpi-page .mpi-methodology-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #e9eff5;
+}
+
+.mpi-page .mpi-methodology-heading > div {
+  min-width: 0;
+}
+
+.mpi-page .mpi-methodology-heading h2 {
+  margin: 0;
+  color: #163f60;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: -0.35px;
+}
+
+.mpi-page .mpi-methodology-subtitle {
+  margin: 5px 0 0;
+  color: #73879b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.mpi-page .mpi-methodology-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mpi-page .mpi-methodology-item {
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid #e6edf4;
+  border-radius: 13px;
+  background: #f9fbfd;
+}
+
+.mpi-page .mpi-methodology-item h3 {
+  margin: 0 0 9px;
+  color: #294f6e;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.mpi-page .mpi-methodology-item p {
+  margin: 0;
+  color: #6f8397;
+  font-size: 12px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.mpi-page .mpi-methodology-item p + p {
+  margin-top: 10px;
+}
+
+.mpi-page .mpi-methodology-item strong {
+  color: #294f6e;
+  font-weight: 750;
+}
+
+@media (max-width: 700px) {
+  .mpi-page .mpi-methodology {
+    padding: 19px;
+  }
+
+  .mpi-page .mpi-methodology-heading {
+    align-items: flex-start;
+    gap: 11px;
+    padding-bottom: 16px;
+    margin-bottom: 17px;
+  }
+
+  .mpi-page .mpi-methodology-heading h2 {
+    font-size: 18px;
+  }
+
+  .mpi-page .mpi-methodology-content {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .mpi-page .mpi-methodology-item {
+    padding: 16px;
+  }
+}
+
+
+/* ==========================================
+   MPI SUMMARY KPIs — SHARED PROFESSIONAL STYLE
+   Matches Vulnerability Profiler & Financial Inclusion
+   ========================================== */
+
+.mpi-page .mpi-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 17px;
+  margin-bottom: 30px;
+}
+
+.mpi-page .mpi-summary-card {
+  --mpi-kpi-accent: #2189dc;
+  --mpi-kpi-tint: #f0f8ff;
+  --mpi-kpi-icon-bg: #e5f3ff;
+  --mpi-kpi-border: #d0e7fa;
+
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 174px;
+  flex-direction: column;
+  padding: 21px 21px 19px;
+  overflow: hidden;
+
+  border: 1px solid #e2ebf3;
+  border-top: 3px solid var(--mpi-kpi-accent);
+  border-radius: 17px;
+
+  background: linear-gradient(
+    145deg,
+    var(--mpi-kpi-tint) 0%,
+    #ffffff 68%
+  );
+
+  box-shadow: 0 5px 18px rgba(23, 65, 101, 0.035);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+/* Three coordinated KPI colors */
+
+.mpi-page .mpi-summary-card:nth-child(1) {
+  --mpi-kpi-accent: #2189dc;
+  --mpi-kpi-tint: #f0f8ff;
+  --mpi-kpi-icon-bg: #e5f3ff;
+  --mpi-kpi-border: #d0e7fa;
+}
+
+.mpi-page .mpi-summary-card:nth-child(2) {
+  --mpi-kpi-accent: #8063d9;
+  --mpi-kpi-tint: #f7f4ff;
+  --mpi-kpi-icon-bg: #eee8ff;
+  --mpi-kpi-border: #e1d8ff;
+}
+
+.mpi-page .mpi-summary-card:nth-child(3) {
+  --mpi-kpi-accent: #e99a2b;
+  --mpi-kpi-tint: #fff9ef;
+  --mpi-kpi-icon-bg: #fff0d8;
+  --mpi-kpi-border: #f6e4c5;
+}
+
+/* Hover effect */
+
+.mpi-page .mpi-summary-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--mpi-kpi-border);
+  border-top-color: var(--mpi-kpi-accent);
+  box-shadow: 0 12px 27px rgba(23, 65, 101, 0.09);
+}
+
+/* KPI heading and icon */
+
+.mpi-page .mpi-summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 14px;
+}
+
+.mpi-page .mpi-summary-top .mpi-card-label {
+  min-width: 0;
+  margin: 0;
+  color: #627c95;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.mpi-page .mpi-summary-icon {
+  display: inline-flex;
+  flex: 0 0 43px;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+
+  color: var(--mpi-kpi-accent);
+  background: var(--mpi-kpi-icon-bg);
+  border: 1px solid var(--mpi-kpi-border);
+  border-radius: 13px;
+}
+
+.mpi-page .mpi-summary-icon svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+}
+
+/* KPI values */
+
+.mpi-page .mpi-summary-card > strong {
+  display: block;
+  margin-top: auto;
+  color: #123c60;
+  font-size: clamp(27px, 2.4vw, 34px);
+  font-weight: 850;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.mpi-page .mpi-summary-card > .mpi-unavailable {
+  color: #946b2f;
+  font-size: 19px;
+  letter-spacing: 0;
+}
+
+.mpi-page .mpi-card-footnote {
+  display: block;
+  margin-top: 9px;
+  color: #8194a7;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Responsive layout */
+
+@media (max-width: 1000px) {
+  .mpi-page .mpi-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .mpi-page .mpi-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mpi-page .mpi-summary-card {
+    min-height: 158px;
+    padding: 18px;
+  }
+
+  .mpi-page .mpi-summary-card > strong {
+    font-size: 29px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpi-page .mpi-summary-card {
+    transition: none;
+  }
+
+  .mpi-page .mpi-summary-card:hover {
+    transform: none;
   }
 }

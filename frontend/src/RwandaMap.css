@@ -1,109 +1,217 @@
+
+/* =========================================================
+   RP-FVIP — Rwanda Geographic Intelligence
+   Professional, responsive map and district intelligence UI
+   ========================================================= */
+
 .rwanda-map-page {
-  --map-ink: #172b4d;
-  --map-muted: #718096;
-  --map-border: #e5eaf2;
+  --map-ink: #153451;
+  --map-ink-strong: #103b60;
+  --map-muted: #708197;
+  --map-subtle: #8b9aab;
+  --map-border: #e1e9f2;
+  --map-border-strong: #d3deeb;
   --map-blue: #2463eb;
-  color: var(--map-ink);
+  --map-blue-dark: #174cba;
+  --map-blue-soft: #edf4ff;
+  --map-surface: #ffffff;
+  --map-canvas: #f5f9fe;
+  --map-green: #43ad78;
+  --map-yellow: #f3d344;
+  --map-orange: #f7a52b;
+  --map-red: #f05a45;
+  --map-unknown: #d9e1ec;
+
   width: 100%;
   min-width: 0;
+  color: var(--map-ink);
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
 }
 
-.rwanda-map-page * {
+.rwanda-map-page *,
+.rwanda-map-page *::before,
+.rwanda-map-page *::after {
   box-sizing: border-box;
 }
+
+.rwanda-map-page button,
+.rwanda-map-page select {
+  font: inherit;
+}
+
+.rwanda-map-page button:focus-visible,
+.rwanda-map-page select:focus-visible,
+.rwanda-map-page .district-shape:focus-visible {
+  outline: 3px solid rgba(36, 99, 235, 0.35);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------
+   Page heading
+   --------------------------------------------------------- */
 
 .rwanda-map-heading {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 25px;
+  justify-content: space-between;
+  gap: 22px;
+  margin: 0 0 25px;
 }
 
-.rwanda-map-title-icon {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  border-radius: 15px;
-  color: #2563eb;
-  background: #eaf1ff;
-  font-size: 32px;
+.rwanda-map-heading-copy {
+  min-width: 0;
 }
 
 .rwanda-map-eyebrow {
-   display: block;
-  color: #1689db;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-align: center;
+  margin: 0 0 9px;
+  color: #1684c8;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 1.65px;
 }
 
 .rwanda-map-heading h1 {
- margin: 0;
-  color: #0b3558;
-  font-size: clamp(25px, 3vw, 34px);
-  font-weight: 750;
-  letter-spacing: -0.8px;
+  margin: 0;
+  color: var(--map-ink-strong);
+  font-size: clamp(26px, 3vw, 35px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1.15px;
 }
 
-.rwanda-map-heading > div:last-child > p:last-child {
-  margin: 7px 0 0;
+.rwanda-map-intro {
+  max-width: 690px;
+  margin: 9px 0 0;
   color: var(--map-muted);
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.75;
 }
+
+.rwanda-map-heading-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-shrink: 0;
+  padding: 11px 14px;
+  border: 1px solid #d9e7fb;
+  border-radius: 12px;
+  background: #f4f8ff;
+  color: #285ca7;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.rwanda-map-heading-badge svg {
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   Filter panel
+   --------------------------------------------------------- */
 
 .rwanda-map-filters {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  padding: 17px;
-  margin-bottom: 20px;
+  grid-template-columns: minmax(210px, 1.15fr) repeat(3, minmax(145px, 1fr));
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 21px;
+  padding: 20px;
   border: 1px solid var(--map-border);
-  border-radius: 15px;
-  background: #fff;
-  box-shadow: 0 4px 18px rgba(23, 43, 77, 0.035);
+  border-radius: 17px;
+  background: var(--map-surface);
+  box-shadow: 0 5px 22px rgba(22, 52, 81, 0.045);
 }
 
-.rwanda-map-filters label {
+.rwanda-map-filter-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding-bottom: 2px;
+}
+
+.rwanda-map-filter-heading > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--map-blue);
+}
+
+.rwanda-map-filter-heading h2 {
+  margin: 0;
+  color: var(--map-ink-strong);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.rwanda-map-filter-heading p {
+  margin: 5px 0 0;
+  color: var(--map-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.rwanda-map-filter {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-width: 0;
 }
 
-.rwanda-map-filters label > span {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 700;
+.rwanda-map-filter > span {
+  color: #53677f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
-.rwanda-map-filters select {
+.rwanda-map-filter select {
   width: 100%;
   min-width: 0;
-  height: 41px;
-  padding: 0 10px;
-  border: 1px solid #dfe6ef;
-  border-radius: 9px;
-  color: #263752;
-  background: #fff;
-  font: inherit;
-  font-size: 12px;
-  outline: none;
+  height: 43px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--map-border-strong);
+  border-radius: 10px;
+  background-color: #fbfdff;
+  color: #263e59;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
 }
 
-.rwanda-map-filters select:focus {
-  border-color: #6495f7;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+.rwanda-map-filter select:hover {
+  border-color: #a8c1e7;
+  background-color: #fff;
 }
+
+.rwanda-map-filter select:focus {
+  border-color: var(--map-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(36, 99, 235, 0.1);
+}
+
+.rwanda-map-filter select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------
+   Main workspace and cards
+   --------------------------------------------------------- */
 
 .rwanda-map-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.85fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(315px, 0.88fr);
   align-items: start;
-  gap: 20px;
+  gap: 21px;
 }
 
 .rwanda-map-card,
@@ -111,94 +219,173 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--map-border);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 5px 22px rgba(23, 43, 77, 0.045);
+  border-radius: 17px;
+  background: var(--map-surface);
+  box-shadow: 0 6px 25px rgba(22, 52, 81, 0.05);
 }
+
+/* ---------------------------------------------------------
+   Map card heading
+   --------------------------------------------------------- */
 
 .rwanda-map-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  padding: 21px 21px 15px;
+  gap: 18px;
+  padding: 23px 23px 18px;
 }
 
-.rwanda-map-card-header h2,
-.intelligence-header h2 {
-  margin: 0;
-  color: #172b4d;
-  font-size: 17px;
-  font-weight: 800;
+.rwanda-map-card-header > div {
+  min-width: 0;
 }
 
-.rwanda-map-card-header p,
-.intelligence-header > div > p:last-child {
-  margin: 6px 0 0;
-  color: var(--map-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.demo-badge {
-  flex-shrink: 0;
-  padding: 7px 9px;
-  border-radius: 20px;
-  color: #975a16;
-  background: #fff4dc;
+.rwanda-map-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 11px;
+  color: #4776b5;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
 }
+
+.rwanda-map-section-title svg {
+  flex-shrink: 0;
+}
+
+.rwanda-map-card-header h2 {
+  margin: 0;
+  color: var(--map-ink-strong);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.35px;
+}
+
+.rwanda-map-card-header p {
+  max-width: 470px;
+  margin: 7px 0 0;
+  color: var(--map-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.rwanda-map-source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  max-width: 190px;
+  padding: 8px 10px;
+  border: 1px solid #dce9fa;
+  border-radius: 9px;
+  background: #f3f7ff;
+  color: #315d9d;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------
+   Map canvas
+   --------------------------------------------------------- */
 
 .rwanda-map-canvas {
   position: relative;
   min-height: 480px;
-  margin: 0 13px;
+  margin: 0 15px;
   overflow: hidden;
-  border: 1px solid #e7edf5;
-  border-radius: 13px;
+  isolation: isolate;
+  border: 1px solid #e2eaf4;
+  border-radius: 14px;
   background:
-    radial-gradient(ellipse at center, rgba(219, 234, 254, 0.6), transparent 68%),
-    #f7faff;
+    radial-gradient(
+      ellipse at 50% 44%,
+      rgba(218, 234, 253, 0.68),
+      rgba(242, 247, 253, 0.18) 62%,
+      transparent 80%
+    ),
+    linear-gradient(145deg, #f8fbff 0%, #f0f6fd 100%);
 }
 
 .rwanda-map-svg {
   position: absolute;
+  z-index: 1;
   inset: 14px 10px;
   width: calc(100% - 20px);
   height: calc(100% - 28px);
   overflow: visible;
 }
 
-.district-shape {
-  stroke: #fff;
-  stroke-width: 0.8;
-  stroke-linejoin: round;
+/* Map districts */
+
+.rwanda-map-page .district-shape {
   cursor: pointer;
-  transition: filter 0.15s ease, stroke-width 0.15s ease;
+  stroke: #fff;
+  stroke-width: 0.85;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  transition:
+    filter 0.16s ease,
+    stroke 0.16s ease,
+    stroke-width 0.16s ease;
 }
 
-.district-shape:hover,
-.district-shape:focus-visible {
-  filter: brightness(0.92);
-  stroke: #183b70;
+.rwanda-map-page .district-shape.level-red {
+  fill: var(--map-red);
+}
+
+.rwanda-map-page .district-shape.level-orange {
+  fill: var(--map-orange);
+}
+
+.rwanda-map-page .district-shape.level-yellow {
+  fill: var(--map-yellow);
+}
+
+.rwanda-map-page .district-shape.level-green {
+  fill: var(--map-green);
+}
+
+.rwanda-map-page .district-shape.level-unknown {
+  fill: var(--map-unknown);
+}
+
+.rwanda-map-page .district-shape:hover {
+  filter: brightness(0.94) saturate(1.04);
+  stroke: #31577f;
+  stroke-width: 1.8;
+}
+
+.rwanda-map-page .district-shape:focus-visible {
+  filter: brightness(0.93);
+  stroke: #123f82;
   stroke-width: 2;
   outline: none;
 }
 
-.district-shape.selected {
-  stroke: #172b4d;
-  stroke-width: 2.3;
+.rwanda-map-page .district-shape.selected {
+  stroke: #153451;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 1px 1px rgba(17, 45, 77, 0.15));
 }
+
+/* Neighbor labels */
 
 .neighbor-label {
   position: absolute;
-  z-index: 1;
-  color: #9aa9bb;
-  font-size: 9px;
+  z-index: 2;
+  color: #91a3b7;
+  font-size: 8px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.35px;
   pointer-events: none;
+  user-select: none;
 }
 
 .neighbor-uganda {
@@ -208,7 +395,7 @@
 
 .neighbor-drc {
   top: 47%;
-  left: 9px;
+  left: 8px;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
 }
@@ -224,114 +411,220 @@
   left: 45%;
 }
 
+/* Rwanda Map — North compass */
 .map-compass {
- position: absolute;
-  top: 12px;
-  left: 95%;
-  transform: translateX(-50%);
+  position: absolute;
   z-index: 4;
+  top: 12px;
+  right: 12px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 2px;
 
-  width: 40px;
-  height: 48px;
+  width: 36px;
+  height: 43px;
   box-sizing: border-box;
 
   border: 1px solid #dce6f2;
-  border-radius: 11px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.96);
   color: #174c70;
   box-shadow: 0 3px 10px rgba(23, 43, 77, 0.07);
 
-  font-size: 16px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.map-compass .map-compass-label {
+  font-size: 13px;
   font-weight: 800;
   line-height: 1;
 }
 
+.map-compass .map-compass-arrow {
+  color: #2463eb;
+  font-size: 15px;
+  line-height: 1;
+}
+/* Map loading, errors and empty states */
+
 .map-message {
   position: absolute;
+  z-index: 3;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 25px;
-  color: #64748b;
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px;
+  color: #61758e;
+  font-size: 12px;
+  line-height: 1.7;
   text-align: center;
 }
 
+.map-message svg {
+  color: #5d85bd;
+}
+
+/* Zoom controls */
+
 .map-zoom-controls {
   position: absolute;
-  z-index: 3;
+  z-index: 5;
   right: 13px;
   bottom: 14px;
   display: grid;
-  gap: 5px;
+  gap: 6px;
 }
 
 .map-zoom-controls button {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 37px;
+  height: 37px;
+  padding: 0;
   border: 1px solid #dce5f0;
-  border-radius: 9px;
-  color: #304b72;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(23, 43, 77, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.97);
+  color: #304f73;
+  box-shadow: 0 3px 10px rgba(23, 43, 77, 0.075);
   cursor: pointer;
-  font-size: 20px;
+  transition:
+    color 0.16s ease,
+    border-color 0.16s ease,
+    background-color 0.16s ease,
+    transform 0.16s ease;
 }
 
 .map-zoom-controls button:hover {
-  color: #fff;
+  transform: translateY(-1px);
   border-color: var(--map-blue);
   background: var(--map-blue);
+  color: #fff;
 }
+
+/* ---------------------------------------------------------
+   Map legend
+   --------------------------------------------------------- */
 
 .rwanda-map-legend {
   display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 19px 21px 15px;
+}
+
+.rwanda-map-legend-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 5px 12px;
+}
+
+.rwanda-map-legend-heading strong {
+  color: #29425e;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rwanda-map-legend-heading > span {
+  color: var(--map-subtle);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.rwanda-map-legend-items {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px 15px;
-  padding: 17px 20px 10px;
+  gap: 10px 15px;
 }
 
-.rwanda-map-legend > strong {
-  width: 100%;
-  font-size: 11px;
-}
-
-.rwanda-map-legend > span {
+.rwanda-map-legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: #5d6c81;
-  font-size: 10px;
+  gap: 7px;
+  color: #5e7086;
+  font-size: 9px;
+  line-height: 1.5;
 }
 
-.rwanda-map-legend i,
-.compare-row > i {
-  width: 10px;
-  height: 10px;
+.rwanda-map-legend-swatch {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
   flex-shrink: 0;
+  border: 1px solid rgba(35, 55, 80, 0.08);
   border-radius: 3px;
 }
 
-.rwanda-map-disclaimer {
-  margin: 8px 20px 20px;
-  padding-top: 12px;
-  border-top: 1px solid #edf1f6;
-  color: #7a8798;
-  font-size: 10px;
-  line-height: 1.6;
+.rwanda-map-legend-swatch.level-red {
+  background: var(--map-red);
 }
 
+.rwanda-map-legend-swatch.level-orange {
+  background: var(--map-orange);
+}
+
+.rwanda-map-legend-swatch.level-yellow {
+  background: var(--map-yellow);
+}
+
+.rwanda-map-legend-swatch.level-green {
+  background: var(--map-green);
+}
+
+.rwanda-map-legend-swatch.level-unknown {
+  background: var(--map-unknown);
+}
+
+.rwanda-map-unavailable-note {
+  margin: 0;
+  padding: 11px 12px;
+  border: 1px solid #e3eaf3;
+  border-radius: 9px;
+  background: #f7f9fc;
+  color: #697b90;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.rwanda-map-data-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0 20px 19px;
+  padding: 12px 13px;
+  border: 1px solid #e2eaf4;
+  border-radius: 10px;
+  background: #f8fafd;
+}
+
+.rwanda-map-data-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #6382a9;
+}
+
+.rwanda-map-data-note p {
+  margin: 0;
+  color: #697b90;
+  font-size: 10px;
+  line-height: 1.75;
+}
+
+/* ---------------------------------------------------------
+   District Intelligence panel
+   --------------------------------------------------------- */
+
 .district-intelligence {
-  padding: 20px;
+  padding: 21px;
 }
 
 .intelligence-header {
@@ -339,13 +632,34 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 17px;
-  border-bottom: 1px solid #edf1f6;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eaf0f6;
+}
+
+.intelligence-title-copy {
+  min-width: 0;
+}
+
+.intelligence-header .rwanda-map-eyebrow {
+  margin-bottom: 8px;
+  text-align: left;
 }
 
 .intelligence-header h2 {
-  font-size: 20px;
-  letter-spacing: -0.5px;
+  margin: 0;
+  color: var(--map-ink-strong);
+  font-size: clamp(19px, 1.7vw, 23px);
+  font-weight: 850;
+  line-height: 1.3;
+  letter-spacing: -0.55px;
+  overflow-wrap: anywhere;
+}
+
+.intelligence-header > div > p:last-child {
+  margin: 7px 0 0;
+  color: var(--map-muted);
+  font-size: 11px;
+  line-height: 1.6;
 }
 
 .selected-dot {
@@ -355,232 +669,267 @@
   margin-top: 6px;
   border-radius: 50%;
   background: #27966f;
-  box-shadow: 0 0 0 4px #e3f6ed;
+  box-shadow: 0 0 0 4px #e5f5ed;
 }
+
+.intelligence-selection-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 15px;
+  padding: 11px 12px;
+  border: 1px solid #e0eafb;
+  border-radius: 10px;
+  background: #f5f8ff;
+  color: #607692;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.intelligence-selection-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #4c76b2;
+}
+
+/* Indicator cards */
 
 .intelligence-stat {
   display: flex;
   align-items: flex-start;
   gap: 13px;
-  margin-top: 13px;
+  min-width: 0;
+  margin-top: 12px;
   padding: 15px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 13px;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
-.intelligence-stat > span {
+.intelligence-stat:hover {
+  box-shadow: 0 4px 12px rgba(23, 43, 77, 0.035);
+}
+
+.intelligence-stat-icon {
   display: grid;
   place-items: center;
-  width: 35px;
-  height: 35px;
+  width: 39px;
+  height: 39px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 11px;
   background: rgba(255, 255, 255, 0.8);
-  font-size: 20px;
 }
 
-.intelligence-stat p {
-  margin: 0 0 7px;
-  font-size: 11px;
-  font-weight: 700;
+.intelligence-stat-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
-.intelligence-stat strong {
-  display: block;
-  font-size: 23px;
-  line-height: 1.3;
-  letter-spacing: -0.5px;
+.intelligence-stat-content {
+  flex: 1;
+  min-width: 0;
 }
 
-.intelligence-stat small {
-  display: block;
-  margin-top: 5px;
-  color: #66758a;
+.intelligence-stat-content p {
+  margin: 1px 0 8px;
   font-size: 10px;
+  font-weight: 800;
   line-height: 1.5;
+}
+
+.intelligence-stat-content strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 1.3;
+  letter-spacing: -0.6px;
+}
+
+.intelligence-stat-content small {
+  display: block;
+  margin-top: 7px;
+  color: #66788d;
+  font-size: 9px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .poverty-stat {
-  color: #a8343b;
-  border-color: #f7d9da;
-  background: #fff1f1;
+  border-color: #f5d8d5;
+  background: linear-gradient(125deg, #fff1ef 0%, #fff8f7 100%);
+  color: #a83d36;
 }
 
 .mpi-stat {
-  color: #245ab4;
-  border-color: #dbe8ff;
-  background: #eff5ff;
+  border-color: #dce8fa;
+  background: linear-gradient(125deg, #eef5ff 0%, #f8fbff 100%);
+  color: #2859a0;
 }
 
 .finance-stat {
-  color: #7041a4;
-  border-color: #eadcff;
-  background: #f7f1ff;
+  border-color: #e8def7;
+  background: linear-gradient(125deg, #f6f1ff 0%, #fcfaff 100%);
+  color: #6e4ba0;
 }
+
+.intelligence-value-loading {
+  color: #73849a;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+
+/* ---------------------------------------------------------
+   Intelligence subpanels
+   --------------------------------------------------------- */
 
 .deprivation-panel,
 .compare-panel {
+  min-width: 0;
   margin-top: 20px;
   padding-top: 18px;
-  border-top: 1px solid #edf1f6;
+  border-top: 1px solid #eaf0f6;
 }
 
-.deprivation-panel h3,
-.compare-panel h3 {
-  margin: 0;
-  color: #223653;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.deprivation-panel > p {
-  margin: 7px 0 15px;
-  color: #8793a3;
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-.deprivation-row {
-  margin-top: 13px;
-}
-
-.deprivation-row > div:first-child {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 7px;
-  color: #5e6d81;
-  font-size: 11px;
-}
-
-.deprivation-row strong {
-  color: #273b58;
-  font-size: 11px;
-}
-
-.deprivation-track {
-  height: 6px;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #edf1f6;
-}
-
-.deprivation-track > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #6797ef, #3470de);
-}
-
-.compare-panel {
-  display: grid;
-  gap: 12px;
-}
-
-.compare-panel h3 {
-  margin-bottom: 2px;
-}
-
-.compare-row {
+.intelligence-subheading {
   display: flex;
   align-items: center;
   gap: 9px;
-  min-width: 0;
-  color: #596a80;
-  font-size: 10px;
+  margin-bottom: 13px;
+}
+
+.intelligence-subheading svg {
+  flex-shrink: 0;
+  color: #527bad;
+}
+
+.intelligence-subheading h3 {
+  margin: 0;
+  color: #243e5c;
+  font-size: 12px;
+  font-weight: 850;
   line-height: 1.5;
 }
 
-.compare-row span {
-  flex: 1;
+.intelligence-empty-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  padding: 13px;
+  border: 1px dashed #d9e3ef;
+  border-radius: 11px;
+  background: #fafcff;
+  color: #728197;
+  font-size: 10px;
+  line-height: 1.8;
 }
 
-.compare-row b {
-  color: #8190a4;
-  font-size: 16px;
+.intelligence-empty-state svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #7b93b2;
 }
+
+/* ---------------------------------------------------------
+   Why this matters
+   --------------------------------------------------------- */
 
 .why-map-matters {
-  display: flex;
- align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-  padding: 21px;
-  border: 1px solid #dfe9fa;
-  border-radius: 15px;
-  background: linear-gradient(110deg, #f1f6ff, #fff);
-  text-align: center;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 17px;
+  margin-top: 21px;
+  padding: 23px;
+  border: 1px solid #dce8f8;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      rgba(220, 234, 255, 0.6),
+      transparent 70%
+    ),
+    linear-gradient(110deg, #f5f8ff 0%, #ffffff 100%);
 }
 
 .why-map-icon {
   display: grid;
   place-items: center;
-  width: 43px;
-  height: 43px;
+  width: 47px;
+  height: 47px;
   flex-shrink: 0;
-  border-radius: 12px;
-  color: #2e64c5;
-  background: #e1ebff;
-  font-size: 23px;
+  border: 1px solid #d9e6ff;
+  border-radius: 13px;
+  background: #e9f0ff;
+  color: #3265ba;
+}
+
+.why-map-copy {
+  min-width: 0;
 }
 
 .why-map-matters h2 {
   margin: 0;
-  color: #1c3558;
+  color: #1b3c60;
   font-size: 14px;
-  text-align: center;
-}
-
-.why-map-matters p {
-  max-width: 720px;
-  margin: 7px 0 0;
-  color: #62748d;
-  font-size: 11px;
-  line-height: 1.7;
-  text-align: center;
-}
-
-.why-map-note {
-    display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 135px;
-  padding: 16px 20px;
-  background: #ffffff;
-  border: 1px solid #d5e5f4;
-  border-left: 4px solid #0261c0;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(9, 47, 85, 0.06);
-  flex-shrink: 0;
-  color: #66819a;
-  font-size: 13px;
-  text-align: left;
-  white-space: normal;
-}
-
-.why-map-note strong {
-  color: #2858a6;
-}
-
-.why-map-note span {
-  color: #74849a;
+  font-weight: 850;
   line-height: 1.5;
 }
 
-.rwanda-map-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 22px;
-  padding: 16px 2px 5px;
-  border-top: 1px solid #e8edf4;
-  color: #8591a1;
+.why-map-matters p {
+  max-width: 690px;
+  margin: 6px 0 0;
+  color: #637790;
   font-size: 10px;
+  line-height: 1.85;
 }
 
-@media (max-width: 1150px) {
+.why-map-note {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 155px;
+  max-width: 210px;
+  padding: 13px 15px;
+  border: 1px solid #dce7f5;
+  border-left: 3px solid #2463eb;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(21, 59, 96, 0.045);
+}
+
+.why-map-note strong {
+  color: #2a5c9e;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1.5;
+}
+
+.why-map-note span {
+  color: #74859a;
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+/* ---------------------------------------------------------
+   Shared footer
+   Intentionally preserve global .rp-page-footer styles.
+   --------------------------------------------------------- */
+
+.rwanda-map-page .rp-page-footer {
+  margin-top: 24px;
+}
+
+/* ---------------------------------------------------------
+   Responsive layout
+   --------------------------------------------------------- */
+
+@media (max-width: 1200px) {
   .rwanda-map-workspace {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -588,10 +937,12 @@
   .district-intelligence {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    align-items: start;
+    gap: 13px;
   }
 
   .intelligence-header,
+  .intelligence-selection-note,
   .deprivation-panel,
   .compare-panel {
     grid-column: 1 / -1;
@@ -603,70 +954,244 @@
 
   .deprivation-panel,
   .compare-panel {
-    margin-top: 5px;
+    margin-top: 3px;
+  }
+
+  .rwanda-map-filters {
+    grid-template-columns: minmax(190px, 1.1fr) repeat(3, minmax(130px, 1fr));
+    gap: 13px;
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 850px) {
   .rwanda-map-filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    padding: 13px;
   }
 
-  .rwanda-map-filters label:last-child {
+  .rwanda-map-filter-heading {
     grid-column: 1 / -1;
+  }
+
+  .rwanda-map-heading {
+    align-items: flex-start;
+  }
+
+  .why-map-matters {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .why-map-note {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .rwanda-map-heading {
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 19px;
+  }
+
+  .rwanda-map-heading h1 {
+    font-size: 27px;
+    letter-spacing: -0.7px;
+  }
+
+  .rwanda-map-intro {
+    font-size: 12px;
+  }
+
+  .rwanda-map-heading-badge {
+    padding: 9px 11px;
+    font-size: 10px;
+  }
+
+  .rwanda-map-filters {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .rwanda-map-filter-heading {
+    grid-column: auto;
+  }
+
+  .rwanda-map-filter select {
+    height: 44px;
+  }
+
+  .rwanda-map-card,
+  .district-intelligence {
+    border-radius: 14px;
   }
 
   .rwanda-map-card-header {
     flex-direction: column;
+    gap: 12px;
+    padding: 19px 17px 15px;
+  }
+
+  .rwanda-map-card-header h2 {
+    font-size: 17px;
+  }
+
+  .rwanda-map-source-badge {
+    max-width: 100%;
   }
 
   .rwanda-map-canvas {
-    min-height: 390px;
+    min-height: 380px;
+    margin: 0 9px;
+    border-radius: 11px;
+  }
+
+  .rwanda-map-svg {
+    inset: 13px 7px;
+    width: calc(100% - 14px);
+    height: calc(100% - 26px);
+  }
+
+  .neighbor-label {
+    font-size: 7px;
+    letter-spacing: 0.9px;
+  }
+
+  .neighbor-drc {
+    left: 5px;
+  }
+
+  .neighbor-tanzania {
+    right: 4px;
+  }
+
+  .map-compass {
+    top: 9px;
+    right: 9px;
+    width: 31px;
+    height: 38px;
+  }
+
+  .map-zoom-controls {
+    right: 9px;
+    bottom: 10px;
+  }
+
+  .map-zoom-controls button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .rwanda-map-legend {
+    gap: 11px;
+    padding: 17px 15px 13px;
+  }
+
+  .rwanda-map-legend-items {
+    gap: 10px 13px;
+  }
+
+  .rwanda-map-data-note {
+    margin: 0 14px 15px;
+    padding: 11px;
   }
 
   .district-intelligence {
     display: flex;
     flex-direction: column;
+    gap: 0;
+    padding: 17px;
+  }
+
+  .intelligence-header,
+  .intelligence-selection-note,
+  .deprivation-panel,
+  .compare-panel {
+    width: 100%;
+  }
+
+  .intelligence-header h2 {
+    font-size: 21px;
+  }
+
+  .intelligence-selection-note {
+    margin-bottom: 13px;
   }
 
   .intelligence-stat {
-    margin-top: 0;
+    margin-top: 11px;
+    padding: 13px;
+  }
+
+  .intelligence-stat-content strong {
+    font-size: 21px;
+  }
+
+  .deprivation-panel,
+  .compare-panel {
+    margin-top: 19px;
+    padding-top: 17px;
   }
 
   .why-map-matters {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    padding: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+    padding: 18px;
+  }
+
+  .why-map-icon {
+    width: 42px;
+    height: 42px;
   }
 
   .why-map-note {
-    width: 100%;
-    margin: 5px 0 0;
-    padding: 12px 0 0;
-    border-top: 1px solid #dbe5f5;
-    border-left: 0;
+    grid-column: auto;
+    min-width: 0;
+    padding: 12px;
   }
 
-  .rwanda-map-footer {
-    flex-direction: column;
+  .rwanda-map-page .rp-page-footer {
+    margin-top: 20px;
   }
 }
 
-@media (max-width: 420px) {
-  .rwanda-map-heading {
-    align-items: flex-start;
-  }
-
-  .rwanda-map-filters {
-    grid-template-columns: 1fr;
-  }
-
-  .rwanda-map-filters label:last-child {
-    grid-column: auto;
+@media (max-width: 380px) {
+  .rwanda-map-heading h1 {
+    font-size: 24px;
   }
 
   .rwanda-map-canvas {
     min-height: 330px;
+  }
+
+  .rwanda-map-legend-items {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .intelligence-stat {
+    gap: 10px;
+    padding: 11px;
+  }
+
+  .intelligence-stat-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .intelligence-stat-content strong {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rwanda-map-page *,
+  .rwanda-map-page *::before,
+  .rwanda-map-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

@@ -1130,7 +1130,7 @@ select:focus-visible {
 }
 
 .uganda { top: 12px; left: 46%; }
-.drc { left: 1px; top: 53%; writing-mode: vertical-rl; transform: translateY(-50%) rotate(180deg);}
+.drc { left: 1px; top: 54%; writing-mode: vertical-rl; transform: translateY(-50%) rotate(180deg);}
 .tanzania { right: -1px; bottom: 31%;  writing-mode: vertical-rl;
   transform: translateY(-50%);}
 .burundi { left: 45%; bottom: -9px; }
@@ -2128,39 +2128,55 @@ select:focus-visible {
 }
 
 
-/* Neighbor labels stay over the map */
 
+/* Dashboard map — North compass */
 .map-panel .map-north {
   position: absolute;
-  top: 12px;
-  left: 95%;
-  transform: translateX(-50%);
   z-index: 4;
+  top: 12px;
+  right: 12px;
+  left: auto;
+  transform: none;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 2px;
 
-  width: 40px;
-  height: 48px;
+  width: 36px;
+  height: 43px;
   box-sizing: border-box;
 
   border: 1px solid #dce6f2;
-  border-radius: 11px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.96);
   color: #174c70;
   box-shadow: 0 3px 10px rgba(23, 43, 77, 0.07);
 
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
   line-height: 1;
+
+  pointer-events: none;
 }
 
 .map-panel .map-north span {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+
+.map-panel .map-north .map-north-label {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.map-panel .map-north .map-north-arrow {
+  color: #2463eb;
+  font-size: 15px;
   line-height: 1;
 }
 
@@ -2253,6 +2269,34 @@ select:focus-visible {
   height: 420px;
   max-height: none;
   overflow: visible;
+}
+
+
+/* Dashboard district map — centered heading */
+.map-panel .rwanda-map-card-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px 20px 26px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.map-panel .rwanda-map-card-heading {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+
+.map-panel .rwanda-map-card-heading h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.map-panel .rwanda-map-card-heading p {
+  margin: 10px 0 0;
+  text-align: center;
 }
 
 /* Apply data-based colors to each district */
@@ -2669,40 +2713,46 @@ select:focus-visible {
 }
 
 
-.dashboard-map-controls button {
+.map-panel .dashboard-map-controls button {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 37px;
+  height: 37px;
   padding: 0;
-  border: 1px solid #dce6f2;
-  border-radius: 9px;
-  background: #fff;
-  color: #174c70;
-  box-shadow: 0 3px 10px rgba(23, 43, 77, 0.09);
+  border: 1px solid #dce5f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #304f73;
+  box-shadow: 0 3px 10px rgba(23, 43, 77, 0.08);
+  font: inherit;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
   transition:
     background 160ms ease,
+    border-color 160ms ease,
     color 160ms ease,
     transform 160ms ease;
 }
 
 
-.dashboard-map-controls button:hover {
-  background: #1768c4;
-  border-color: #1768c4;
-  color: #fff;
+.map-panel .dashboard-map-controls button:hover {
+  background: #2463eb;
+  border-color: #2463eb;
+  color: #ffffff;
 }
 
-.dashboard-map-controls button:focus-visible {
+.map-panel .dashboard-map-controls button:active {
+  transform: scale(0.96);
+}
+
+.map-panel .dashboard-map-controls button:focus-visible {
   outline: 3px solid #93c5fd;
   outline-offset: 2px;
 }
 
 @media (max-width: 760px) {
-  .dashboard-map-controls button {
+  .map-panel .dashboard-map-controls button {
     width: 35px;
     height: 35px;
   }
@@ -2773,7 +2823,11 @@ select:focus-visible {
   z-index: 5;
   right: 12px;
   bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+
 
 /* Legend follows the map instead of overlaying it */
 .map-panel .map-legend {

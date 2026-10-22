@@ -1,5 +1,28 @@
-import { useMemo, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
+import RPPageFooter from "./RPPageFooter";
+import {
+  ArrowLeft,
+  ChartColumn,
+  CircleHelp,
+  Droplets,
+  HeartPulse,
+  House,
+  Info,
+  Layers,
+  MapPin,
+  RotateCcw,
+  SlidersHorizontal,
+  Wallet,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import "./RwandaMap.css";
+import {
+  getDistrictName,
+  makeDistrictPath,
+  normalizeDistrictName,
+} from "./RwandaMapUtils";
 
 const PROVINCES = [
   "All Provinces",
@@ -10,32 +33,88 @@ const PROVINCES = [
   "Kigali",
 ];
 
-const DISTRICTS = [
-  { name: "Nyamagabe", province: "Southern", poverty: 51.4 },
-  { name: "Gisagara", province: "Southern", poverty: 45.6 },
-  { name: "Nyanza", province: "Southern", poverty: 43.3 },
-  { name: "Nyamasheke", province: "Western", poverty: 42.8 },
-  { name: "Rusizi", province: "Western", poverty: 44.2 },
-  { name: "Rutsiro", province: "Western", poverty: 40.8 },
-  { name: "Kamonyi", province: "Southern", poverty: 39.7 },
-  { name: "Nyaruguru", province: "Southern", poverty: 39.7 },
-  { name: "Karongi", province: "Western", poverty: 38.2 },
-  { name: "Rubavu", province: "Western", poverty: 38.8 },
-  { name: "Kayonza", province: "Eastern", poverty: 36.6 },
-  { name: "Nyagatare", province: "Eastern", poverty: 36.4 },
-  { name: "Kirehe", province: "Eastern", poverty: 14.2 },
-  { name: "Gatsibo", province: "Eastern", poverty: 18.4 },
-  { name: "Gasabo", province: "Kigali", poverty: 11.1 },
-  { name: "Kicukiro", province: "Kigali", poverty: 6.9 },
+const DISTRICT_PROVINCE = {
+  Burera: "Northern",
+  Gakenke: "Northern",
+  Gicumbi: "Northern",
+  Musanze: "Northern",
+  Rulindo: "Northern",
+
+  Gisagara: "Southern",
+  Huye: "Southern",
+  Kamonyi: "Southern",
+  Muhanga: "Southern",
+  Nyamagabe: "Southern",
+  Nyanza: "Southern",
+  Nyaruguru: "Southern",
+  Ruhango: "Southern",
+
+  Bugesera: "Eastern",
+  Gatsibo: "Eastern",
+  Kayonza: "Eastern",
+  Kirehe: "Eastern",
+  Ngoma: "Eastern",
+  Nyagatare: "Eastern",
+  Rwamagana: "Eastern",
+
+  Karongi: "Western",
+  Ngororero: "Western",
+  Nyabihu: "Western",
+  Nyamasheke: "Western",
+  Rubavu: "Western",
+  Rusizi: "Western",
+  Rutsiro: "Western",
+
+  Gasabo: "Kigali",
+  Kicukiro: "Kigali",
+  Nyarugenge: "Kigali",
+};
+
+const INDICATORS = [
+  "Poverty Rate",
+  "Multidimensional Poverty",
+  "Financial Exclusion",
 ];
 
-const getColor = (value) => {
-  if (value == null) return "#d9e1ec";
-  if (value < 20) return "#174ea6";
-  if (value <= 30) return "#27966f";
-  if (value <= 40) return "#f4d35e";
-  if (value <= 50) return "#f59e0b";
-  return "#dc4545";
+const getProvinceForDistrict = (district) => {
+  const normalized = normalizeDistrictName(district);
+
+  const matchedDistrict = Object.keys(DISTRICT_PROVINCE).find(
+    (name) => normalizeDistrictName(name) === normalized
+  );
+
+  return matchedDistrict ? DISTRICT_PROVINCE[matchedDistrict] : null;
+};
+
+const getOfficialDistrict = (data, district) =>
+  data.find(
+    (item) =>
+      normalizeDistrictName(item?.district) ===
+      normalizeDistrictName(district)
+  ) || null;
+
+const getPovertyValue = (record) => {
+  if (
+    record?.poverty_rate === null ||
+    record?.poverty_rate === undefined ||
+    record?.poverty_rate === ""
+  ) {
+    return null;
+  }
+
+  const value = Number(record.poverty_rate);
+
+  return Number.isFinite(value) && value >= 0 && value <= 100
+    ? value
+    : null;
+};
+
+const getPovertyLevel = (value) => {
+  if (value == null) return "level-unknown";
+  if (value >= 40) return "level-red";
+  if (value >= 30) return "level-orange";
+  if (value >= 20) return "level-yellow";
+  return "level-green";
 };
 
 export default function RwandaMap({
@@ -43,103 +122,193 @@ export default function RwandaMap({
   mapBounds,
   districtMapLoading = false,
   districtMapError = "",
+  officialDistrictData = [],
+  officialDistrictLoading = false,
+  officialDistrictError = "",
   selectedDistrict: initialDistrict = "Nyamagabe",
   onSelectDistrict,
   onBack,
 }) {
-  const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict);
+  const [selectedDistrict, setSelectedDistrict] =
+    useState(initialDistrict || "Nyamagabe");
+
   const [indicator, setIndicator] = useState("Poverty Rate");
-  const [compareWith, setCompareWith] = useState("Financial Exclusion");
   const [province, setProvince] = useState("All Provinces");
-  const [area, setArea] = useState("All");
-  const [year, setYear] = useState("2023/24");
   const [zoom, setZoom] = useState(1);
 
-  const selectedData = useMemo(
-    () => DISTRICTS.find((item) => item.name === selectedDistrict),
-    [selectedDistrict]
-  );
+  // Keep the map selection synchronized with the parent Dashboard.
+  useEffect(() => {
+    if (!initialDistrict) return;
 
-  const filteredFeatures = useMemo(() => {
-    return districtMapFeatures.filter((feature) => {
-      const props = feature.properties || {};
-      const name = String(
-        props.district_name ||
-        props.District ||
-        props.district ||
-        props.name ||
-        props.ADM2_EN ||
-        props.adm2_en ||
-        ""
-      ).replace(/\s+district$/i, "").trim();
+    setSelectedDistrict(initialDistrict);
 
-      const district = DISTRICTS.find(
-        (item) => item.name.toLowerCase() === name.toLowerCase()
-      );
+    const districtProvince = getProvinceForDistrict(initialDistrict);
 
-      if (province !== "All Provinces" && district?.province !== province) {
-        return false;
+    setProvince((currentProvince) => {
+      if (
+        currentProvince !== "All Provinces" &&
+        districtProvince !== currentProvince
+      ) {
+        return "All Provinces";
       }
 
-      return true;
+      return currentProvince;
     });
-  }, [districtMapFeatures, province]);
+  }, [initialDistrict]);
+
+  const districtOptions = useMemo(
+    () =>
+      Object.keys(DISTRICT_PROVINCE)
+        .filter(
+          (district) =>
+            province === "All Provinces" ||
+            DISTRICT_PROVINCE[district] === province
+        )
+        .sort((a, b) => a.localeCompare(b)),
+    [province]
+  );
+
+  const selectedData = useMemo(
+    () => getOfficialDistrict(officialDistrictData, selectedDistrict),
+    [officialDistrictData, selectedDistrict]
+  );
+
+  const selectedPoverty = getPovertyValue(selectedData);
+
+  const indicatorAvailable = indicator === "Poverty Rate";
+
+  const filteredFeatures = useMemo(
+    () =>
+      districtMapFeatures.filter((feature) => {
+        const name = getDistrictName(feature);
+        const districtProvince = getProvinceForDistrict(name);
+
+        return (
+          province === "All Provinces" ||
+          districtProvince === province
+        );
+      }),
+    [districtMapFeatures, province]
+  );
 
   const handleSelect = (name) => {
+    if (!name) return;
+
     setSelectedDistrict(name);
     onSelectDistrict?.(name);
   };
 
+  const handleProvinceChange = (event) => {
+    const nextProvince = event.target.value;
+    setProvince(nextProvince);
+
+    const nextDistricts = Object.keys(DISTRICT_PROVINCE)
+      .filter(
+        (district) =>
+          nextProvince === "All Provinces" ||
+          DISTRICT_PROVINCE[district] === nextProvince
+      )
+      .sort((a, b) => a.localeCompare(b));
+
+    const currentDistrictFits =
+      nextProvince === "All Provinces" ||
+      getProvinceForDistrict(selectedDistrict) === nextProvince;
+
+    if (!currentDistrictFits && nextDistricts.length > 0) {
+      handleSelect(nextDistricts[0]);
+    }
+  };
+
+  const handleDistrictChange = (event) => {
+    handleSelect(event.target.value);
+  };
+
+  const handleIndicatorChange = (event) => {
+    setIndicator(event.target.value);
+  };
+
+  const mapDataLoading =
+    indicatorAvailable && officialDistrictLoading;
+
+  const mapDataError =
+    indicatorAvailable && Boolean(officialDistrictError);
+
+  const mapHasBoundaries =
+    Array.isArray(districtMapFeatures) &&
+    districtMapFeatures.length > 0 &&
+    Boolean(mapBounds);
+
   return (
     <main className="rwanda-map-page">
       <header className="rwanda-map-heading">
-        <div>
-        <p className="rwanda-map-eyebrow">RP-FVIP / GEOGRAPHIC INTELLIGENCE</p>
-          
+        <div className="rwanda-map-heading-copy">
+
+          <h1>Rwanda Poverty Map</h1>
+
+        </div>
+
+        <div className="rwanda-map-heading-badge">
+          <MapPin size={17} aria-hidden="true" />
+          <span>Rwanda · District view</span>
         </div>
       </header>
 
-      <section className="rwanda-map-filters" aria-label="Map filters">
-        <label>
+      <section
+        className="rwanda-map-filters"
+        aria-label="Map filters"
+      >
+        <div className="rwanda-map-filter-heading">
+          <SlidersHorizontal size={18} aria-hidden="true" />
+          <div>
+            <h2>Explore the map</h2>
+            <p>Choose an indicator and geographic area.</p>
+          </div>
+        </div>
+
+        <label className="rwanda-map-filter">
           <span>Indicator</span>
-          <select value={indicator} onChange={(e) => setIndicator(e.target.value)}>
-            <option>Poverty Rate</option>
-            <option>Multidimensional Poverty</option>
-            <option>Financial Exclusion</option>
+          <select
+            value={indicator}
+            onChange={handleIndicatorChange}
+          >
+            {INDICATORS.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
           </select>
         </label>
 
-        <label>
-          <span>Compare with</span>
-          <select value={compareWith} onChange={(e) => setCompareWith(e.target.value)}>
-            <option>Financial Exclusion</option>
-            <option>Poverty Rate</option>
-            <option>Multidimensional Poverty</option>
-          </select>
-        </label>
-
-        <label>
+        <label className="rwanda-map-filter">
           <span>Province</span>
-          <select value={province} onChange={(e) => setProvince(e.target.value)}>
-            {PROVINCES.map((item) => <option key={item}>{item}</option>)}
+          <select
+            value={province}
+            onChange={handleProvinceChange}
+          >
+            {PROVINCES.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
           </select>
         </label>
 
-        <label>
-          <span>Area</span>
-          <select value={area} onChange={(e) => setArea(e.target.value)}>
-            <option>All</option>
-            <option>Urban</option>
-            <option>Rural</option>
-          </select>
-        </label>
-
-        <label>
-          <span>Year</span>
-          <select value={year} onChange={(e) => setYear(e.target.value)}>
-            <option>2023/24</option>
-            <option>2022/23</option>
-            <option>2021/22</option>
+        <label className="rwanda-map-filter">
+          <span>District</span>
+          <select
+            value={
+              districtOptions.includes(selectedDistrict)
+                ? selectedDistrict
+                : districtOptions[0] || ""
+            }
+            onChange={handleDistrictChange}
+            disabled={districtOptions.length === 0}
+          >
+            {districtOptions.map((district) => (
+              <option key={district} value={district}>
+                {district}
+              </option>
+            ))}
           </select>
         </label>
       </section>
@@ -148,230 +317,384 @@ export default function RwandaMap({
         <section className="rwanda-map-card">
           <div className="rwanda-map-card-header">
             <div>
+              <div className="rwanda-map-section-title">
+                <Layers size={18} aria-hidden="true" />
+                <span>District distribution</span>
+              </div>
+
               <h2>{indicator} by district</h2>
-              <p>Select a district to inspect its indicators.</p>
+
+              <p>
+                Select a district on the map or use the district
+                filter to inspect its available data.
+              </p>
             </div>
-            <span className="demo-badge">Illustrative demo data</span>
+
+            <span className="rwanda-map-source-badge">
+              {indicatorAvailable
+                ? "Poverty · 2023–2024"
+                : "Indicator data unavailable"}
+            </span>
           </div>
 
           <div className="rwanda-map-canvas">
-            <span className="neighbor-label neighbor-uganda">UGANDA</span>
-            <span className="neighbor-label neighbor-drc">DR CONGO</span>
-            <span className="neighbor-label neighbor-tanzania">TANZANIA</span>
-            <span className="neighbor-label neighbor-burundi">BURUNDI</span>
-            <span className="map-compass">N<br />▲</span>
+            <span className="neighbor-label neighbor-uganda">
+              UGANDA
+            </span>
+            <span className="neighbor-label neighbor-drc">
+              DR CONGO
+            </span>
+            <span className="neighbor-label neighbor-tanzania">
+              TANZANIA
+            </span>
+            <span className="neighbor-label neighbor-burundi">
+              BURUNDI
+            </span>
+
+
+<div className="map-compass" aria-label="North">
+  <span className="map-compass-label">N</span>
+  <span className="map-compass-arrow">▲</span>
+</div>
+
 
             {districtMapLoading ? (
-              <div className="map-message">Loading district boundaries…</div>
-            ) : districtMapError ? (
-              <div className="map-message">
-                District boundaries could not be loaded. Check your connection and retry.
+              <div className="map-message" role="status">
+                Loading district boundaries...
               </div>
-            ) : filteredFeatures.length === 0 || !mapBounds ? (
-              <div className="map-message">
-                No district boundaries available. The map needs valid GeoJSON features.
+            ) : districtMapError ? (
+              <div className="map-message" role="alert">
+                <Info size={20} aria-hidden="true" />
+                <span>
+                  District boundaries could not be loaded.
+                  Check your connection and try again.
+                </span>
+              </div>
+            ) : !mapHasBoundaries ? (
+              <div className="map-message" role="status">
+                District boundaries are currently unavailable.
               </div>
             ) : (
               <svg
                 className="rwanda-map-svg"
                 viewBox="0 0 360 440"
-                role="img"
+                role="group"
                 aria-label="Interactive map of Rwanda districts"
               >
-                <g transform={`translate(${180 * (1 - zoom)}, ${220 * (1 - zoom)}) scale(${zoom})`}>
+                <g
+                  transform={`translate(${180 * (1 - zoom)}, ${
+                    220 * (1 - zoom)
+                  }) scale(${zoom})`}
+                >
                   {filteredFeatures.map((feature, index) => {
-                    const props = feature.properties || {};
-                    const rawName =
-                      props.district_name ||
-                      props.District ||
-                      props.district ||
-                      props.name ||
-                      props.ADM2_EN ||
-                      props.adm2_en ||
-                      "";
-                    const name = String(rawName).replace(/\s+district$/i, "").trim();
-                    const data = DISTRICTS.find(
-                      (item) => item.name.toLowerCase() === name.toLowerCase()
+                    const name = getDistrictName(feature);
+
+                    if (!name) return null;
+
+                    const officialDistrict = getOfficialDistrict(
+                      officialDistrictData,
+                      name
                     );
 
-                    const rings = feature.geometry?.type === "Polygon"
-                      ? feature.geometry.coordinates
-                      : feature.geometry?.type === "MultiPolygon"
-                        ? feature.geometry.coordinates.flat(1)
-                        : [];
+                    const value = indicatorAvailable
+                      ? getPovertyValue(officialDistrict)
+                      : null;
 
-                    const coordinates = rings.flat();
-                    const points = coordinates.map(([lon, lat]) => {
-                      const x = ((lon - mapBounds.minLon) /
-                        (mapBounds.maxLon - mapBounds.minLon || 1)) * 320 + 20;
-                      const y = 20 + ((mapBounds.maxLat - lat) /
-                        (mapBounds.maxLat - mapBounds.minLat || 1)) * 400;
-                      return `${x},${y}`;
-                    });
+                    const path = makeDistrictPath(
+                      feature,
+                      mapBounds
+                    );
 
-                    if (!points.length) return null;
+                    if (!path) return null;
+
+                    const levelClass = getPovertyLevel(value);
+                    const isSelected =
+                      normalizeDistrictName(selectedDistrict) ===
+                      normalizeDistrictName(name);
+
+                    const title = value !== null
+                      ? `${name}: ${value.toFixed(1)}% poverty rate`
+                      : `${name}: verified ${indicator.toLowerCase()} data unavailable`;
 
                     return (
-                      <polygon
+                      <path
                         key={`${name}-${index}`}
-                        points={points.join(" ")}
-                        fill={getColor(data?.poverty)}
-                        className={selectedDistrict === name ? "district-shape selected" : "district-shape"}
+                        d={path}
+                        className={`district-shape ${levelClass} ${
+                          isSelected ? "selected" : ""
+                        }`}
                         tabIndex={0}
                         role="button"
-                        aria-label={`${name || "Unknown district"} district`}
-                        onClick={() => data && handleSelect(name)}
+                        aria-label={title}
+                        aria-pressed={isSelected}
+                        onClick={() => handleSelect(name)}
                         onKeyDown={(event) => {
-                          if (data && (event.key === "Enter" || event.key === " ")) {
+                          if (
+                            event.key === "Enter" ||
+                            event.key === " "
+                          ) {
                             event.preventDefault();
                             handleSelect(name);
                           }
                         }}
                       >
-                        <title>
-                          {name}: {data ? `${data.poverty}% illustrative poverty estimate` : "No demo estimate"}
-                        </title>
-                      </polygon>
+                        <title>{title}</title>
+                      </path>
                     );
                   })}
                 </g>
               </svg>
             )}
 
-            <div className="map-zoom-controls">
-              <button type="button" onClick={() => setZoom((z) => Math.min(2.2, z + 0.15))} aria-label="Zoom in">+</button>
-              <button type="button" onClick={() => setZoom((z) => Math.max(0.8, z - 0.15))} aria-label="Zoom out">−</button>
-              <button type="button" onClick={() => setZoom(1)} aria-label="Reset map zoom">⌂</button>
-            </div>
+            {mapHasBoundaries && !districtMapLoading && (
+              <div className="map-zoom-controls">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setZoom((current) =>
+                      Math.min(2.2, current + 0.15)
+                    )
+                  }
+                  aria-label="Zoom in"
+                  title="Zoom in"
+                >
+                  <ZoomIn size={18} aria-hidden="true" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setZoom((current) =>
+                      Math.max(0.8, current - 0.15)
+                    )
+                  }
+                  aria-label="Zoom out"
+                  title="Zoom out"
+                >
+                  <ZoomOut size={18} aria-hidden="true" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setZoom(1)}
+                  aria-label="Reset map zoom"
+                  title="Reset zoom"
+                >
+                  <RotateCcw size={17} aria-hidden="true" />
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="rwanda-map-legend">
-            <strong>Poverty rate</strong>
-            {[
-              ["#174ea6", "Below 20%"],
-              ["#27966f", "20–30%"],
-              ["#f4d35e", "31–40%"],
-              ["#f59e0b", "41–50%"],
-              ["#dc4545", "51% and above"],
-              ["#d9e1ec", "No demo data"],
-            ].map(([color, label]) => (
-              <span key={label}><i style={{ background: color }} />{label}</span>
-            ))}
+            <div className="rwanda-map-legend-heading">
+              <strong>
+                {indicatorAvailable
+                  ? "Poverty rate"
+                  : indicator}
+              </strong>
+              <span>
+                {indicatorAvailable
+                  ? "Share of population"
+                  : "No verified district-level values available"}
+              </span>
+            </div>
+
+            {indicatorAvailable ? (
+              <div className="rwanda-map-legend-items">
+                {[
+                  ["level-green", "Below 20%"],
+                  ["level-yellow", "20%–29.9%"],
+                  ["level-orange", "30%–39.9%"],
+                  ["level-red", "40% and above"],
+                  ["level-unknown", "No verified data"],
+                ].map(([className, label]) => (
+                  <span
+                    className="rwanda-map-legend-item"
+                    key={label}
+                  >
+                    <i
+                      className={`rwanda-map-legend-swatch ${className}`}
+                    />
+                    {label}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="rwanda-map-unavailable-note">
+                The selected indicator is not currently available
+                in the verified district dataset.
+              </p>
+            )}
           </div>
-          <p className="rwanda-map-disclaimer">
-            Demo estimates are illustrative only and are not official district statistics.
-            The selected year and area filters are UI controls until verified data are connected.
-          </p>
+
+          <div className="rwanda-map-data-note">
+            <Info size={16} aria-hidden="true" />
+            <p>
+              Map values are shown only when a matching district
+              record is available. Missing values are not estimated
+              or replaced with sample data.
+            </p>
+          </div>
         </section>
 
         <aside className="district-intelligence">
           <div className="intelligence-header">
-            <div>
-              <p className="rwanda-map-eyebrow">DISTRICT INTELLIGENCE</p>
+            <div className="intelligence-title-copy">
+              <p className="rwanda-map-eyebrow">
+                DISTRICT INTELLIGENCE
+              </p>
+
               <h2>{selectedDistrict} District</h2>
-              <p>{selectedData?.province || "Province unavailable"} Province</p>
+
+              <p>
+                {getProvinceForDistrict(selectedDistrict)
+                  ? `${getProvinceForDistrict(selectedDistrict)} Province`
+                  : "Province information unavailable"}
+              </p>
             </div>
+
             <span className="selected-dot" />
           </div>
 
+          <div className="intelligence-selection-note">
+            <MapPin size={16} aria-hidden="true" />
+            <span>
+              This panel updates when you select a district on the
+              map or use the filters.
+            </span>
+          </div>
+
           <div className="intelligence-stat poverty-stat">
-            <span>◉</span>
-            <div>
+            <span className="intelligence-stat-icon">
+              <ChartColumn size={21} aria-hidden="true" />
+            </span>
+
+            <div className="intelligence-stat-content">
               <p>Poverty Rate</p>
-              <strong>{selectedData ? `${selectedData.poverty.toFixed(1)}%` : "—"}</strong>
-              <small>Illustrative share of population</small>
+
+              {officialDistrictLoading ? (
+                <strong className="intelligence-value-loading">
+                  Loading...
+                </strong>
+              ) : officialDistrictError ? (
+                <strong>Unavailable</strong>
+              ) : selectedPoverty !== null ? (
+                <strong>{selectedPoverty.toFixed(1)}%</strong>
+              ) : (
+                <strong>Not available</strong>
+              )}
+
+              <small>
+                {selectedData?.source
+                  ? `${selectedData.source} · ${
+                      selectedData.reference_period || "Reference period unavailable"
+                    }`
+                  : "No matching verified district record"}
+              </small>
             </div>
           </div>
 
           <div className="intelligence-stat mpi-stat">
-            <span>▦</span>
-            <div>
+            <span className="intelligence-stat-icon">
+              <House size={21} aria-hidden="true" />
+            </span>
+
+            <div className="intelligence-stat-content">
               <p>Multidimensional Poverty</p>
               <strong>Not available</strong>
-              <small>Verified district data required</small>
+              <small>
+                Verified district-level indicator data are not
+                available in the current dataset.
+              </small>
             </div>
           </div>
 
           <div className="intelligence-stat finance-stat">
-            <span>↗</span>
-            <div>
+            <span className="intelligence-stat-icon">
+              <Wallet size={21} aria-hidden="true" />
+            </span>
+
+            <div className="intelligence-stat-content">
               <p>Financial Exclusion</p>
               <strong>Not available</strong>
-              <small>Verified district data required</small>
+              <small>
+                Verified district-level indicator data are not
+                available in the current dataset.
+              </small>
             </div>
           </div>
 
           <section className="deprivation-panel">
-            <h3>Key Deprivation Patterns</h3>
-            <p>Illustrative placeholders - not measured district indicators.</p>
-            {[
-              ["Housing", 78],
-              ["Cooking fuel", 62],
-              ["Water", 48],
-              ["Health insurance", 35],
-            ].map(([label, value]) => (
-              <div className="deprivation-row" key={label}>
-                <div><span>{label}</span><strong>{value}%</strong></div>
-                <div className="deprivation-track">
-                  <span style={{ width: `${value}%` }} />
-                </div>
-              </div>
-            ))}
+            <div className="intelligence-subheading">
+              <Droplets size={19} aria-hidden="true" />
+              <h3>Key Deprivation Patterns</h3>
+            </div>
+
+            <p className="intelligence-empty-state">
+              <CircleHelp size={18} aria-hidden="true" />
+              <span>
+                Housing, cooking fuel, water and health-related
+                deprivation values are not displayed because
+                verified district-level measurements are not
+                available here.
+              </span>
+            </p>
           </section>
 
           <section className="compare-panel">
-            <h3>Compare Indicators</h3>
-            {[
-              ["High poverty + high financial exclusion", "#dc4545"],
-              ["High poverty + lower financial exclusion", "#f59e0b"],
-              ["Lower poverty + high financial exclusion", "#8ac7a8"],
-              ["Lower poverty + lower financial exclusion", "#27966f"],
-            ].map(([label, color]) => (
-              <div className="compare-row" key={label}>
-                <i style={{ background: color }} />
-                <span>{label}</span>
-                <b aria-hidden="true">→</b>
-              </div>
-            ))}
+            <div className="intelligence-subheading">
+              <Layers size={19} aria-hidden="true" />
+              <h3>Indicator Comparison</h3>
+            </div>
+
+            <p className="intelligence-empty-state">
+              <Info size={18} aria-hidden="true" />
+              <span>
+                A district-level comparison will be available when
+                verified poverty, multidimensional poverty and
+                financial inclusion indicators can be matched by
+                district and reference period.
+              </span>
+            </p>
           </section>
         </aside>
       </div>
 
       <section className="why-map-matters">
-        <div className="why-map-icon" aria-hidden="true">▤</div>
-        <div>
+        <div className="why-map-icon" aria-hidden="true">
+          <HeartPulse size={25} />
+        </div>
+
+        <div className="why-map-copy">
           <h2>Why this matters</h2>
           <p>
-            This map helps you explore how poverty, multidimensional deprivation and
-            financial access gaps overlap across districts, so you can identify where
-            support is needed most and make evidence-based decisions.
+            Explore available district-level poverty data to help
+            identify geographic differences and support evidence-based
+            decisions. Indicators are shown only where matching
+            records are available.
           </p>
         </div>
+
         <div className="why-map-note">
-          <strong>Data-driven insights</strong>
-          <span>For a more inclusive Rwanda.</span>
+          <strong>Evidence-led insights</strong>
+          <span>Supporting a more inclusive Rwanda.</span>
         </div>
       </section>
 
-     
-<footer className="rp-page-footer">
-  <div className="rp-page-footer__brand">
-    <strong>RP-FVIP</strong>
-    <span>· Multidimensional Poverty</span>
-  </div>
 
-  <div className="rp-page-footer__note">
-    Demo data analysis only
-  </div>
+<RPPageFooter
+  page="Rwanda Map"
+  note={
+    officialDistrictLoading
+      ? "Loading source data..."
+      : officialDistrictError
+        ? "Official source data unavailable"
+        : "Source: NISR EICV7 · 2023–2024"
+  }
+  onBack={onBack}
+/>
 
-  <button
-    className="rp-back-button"
-    type="button"
-    onClick={() => window.location.reload()}
-  >
-    Back to Dashboard
-  </button>
-</footer>
     </main>
   );
 }

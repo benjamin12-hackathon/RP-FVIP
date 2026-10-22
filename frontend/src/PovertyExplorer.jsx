@@ -1,351 +1,481 @@
+
 import { useEffect, useMemo, useState } from "react";
 import "./PovertyExplorer.css";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
-const formatNumber = (value) =>
-  value == null || !Number.isFinite(Number(value))
-    ? "-"
-    : Number(value).toLocaleString();
+const DISTRICT_PROVINCE = {
+  Burera: "Northern",
+  Gakenke: "Northern",
+  Gicumbi: "Northern",
+  Musanze: "Northern",
+  Rulindo: "Northern",
 
-const formatPercent = (value) =>
-  value == null || !Number.isFinite(Number(value))
-    ? "-"
-    : `${Number(value).toFixed(1)}%`;
+  Gisagara: "Southern",
+  Huye: "Southern",
+  Kamonyi: "Southern",
+  Muhanga: "Southern",
+  Nyamagabe: "Southern",
+  Nyanza: "Southern",
+  Nyaruguru: "Southern",
+  Ruhango: "Southern",
 
-function MetricCard({ label, value, detail, icon, tone = "blue" }) {
+  Bugesera: "Eastern",
+  Gatsibo: "Eastern",
+  Kayonza: "Eastern",
+  Kirehe: "Eastern",
+  Ngoma: "Eastern",
+  Nyagatare: "Eastern",
+  Rwamagana: "Eastern",
+
+  Karongi: "Western",
+  Ngororero: "Western",
+  Nyabihu: "Western",
+  Nyamasheke: "Western",
+  Rubavu: "Western",
+  Rusizi: "Western",
+  Rutsiro: "Western",
+
+  Gasabo: "Kigali",
+  Kicukiro: "Kigali",
+  Nyarugenge: "Kigali",
+};
+
+const PROVINCES = [
+  "Northern",
+  "Eastern",
+  "Southern",
+  "Western",
+  "Kigali",
+];
+
+function PEIcon({ type }) {
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  };
+
+  const paths = {
+    poverty: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M15.5 8.5c-.7-.8-1.7-1.2-3-1.2-1.7 0-3 .9-3 2.2 0 3.5 6.5 1.3 6.5 4.6 0 1.3-1.3 2.3-3.2 2.3-1.3 0-2.5-.5-3.3-1.4M12 5.5v13" />
+      </>
+    ),
+    extreme: (
+      <>
+        <path d="M12 3 2.8 20h18.4L12 3Z" />
+        <path d="M12 9v4.5M12 17h.01" />
+      </>
+    ),
+    mpi: (
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </>
+    ),
+    location: (
+      <>
+        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="2.5" />
+      </>
+    ),
+    search: (
+      <>
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m16 16 4.5 4.5" />
+      </>
+    ),
+    database: (
+      <>
+        <ellipse cx="12" cy="5" rx="8" ry="3" />
+        <path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
+      </>
+    ),
+  };
+
   return (
-    <article className={`pe-metric pe-${tone}`}>
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      {...common}
+    >
+      {paths[type] || paths.database}
+    </svg>
+  );
+}
+
+function MetricCard({ icon, label, value, detail }) {
+  return (
+    <article className="pe-metric-card">
       <div className="pe-metric-top">
-        <span>{label}</span>
-        <span className="pe-metric-icon" aria-hidden="true">{icon}</span>
+        <span className="pe-metric-label">{label}</span>
+        <span className="pe-metric-icon">
+          <PEIcon type={icon} />
+        </span>
       </div>
-      <strong>{value}</strong>
-      <small>{detail}</small>
+      <div className="pe-metric-value">{value}</div>
+      <div className="pe-metric-detail">{detail}</div>
     </article>
   );
 }
 
-function BarList({ title, subtitle, rows, valueKey = "count", labelKey = "label", suffix = "" }) {
-  const max = Math.max(1, ...rows.map((row) => Number(row[valueKey]) || 0));
-  return (
-    <section className="pe-panel">
-      <div className="pe-panel-heading">
-        <div>
-          <h2>{title}</h2>
-          <p>{subtitle}</p>
-        </div>
-      </div>
-      {rows.length ? (
-        <div className="pe-bars">
-          {rows.map((row) => {
-            const value = Number(row[valueKey]) || 0;
-            return (
-              <div className="pe-bar-row" key={row[labelKey]}>
-                <div className="pe-bar-label-line">
-                  <span>{row[labelKey]}</span>
-                  <strong>{formatNumber(value)}{suffix}</strong>
-                </div>
-                <div className="pe-bar-track">
-                  <span style={{ width: `${Math.max(0, Math.min(100, (value / max) * 100))}%` }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="pe-empty">No records available for this selection.</p>
-      )}
-    </section>
-  );
+function formatPercent(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? `${number.toFixed(1)}%` : "—";
+}
+
+function formatIndex(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toFixed(3) : "—";
 }
 
 export default function PovertyExplorer({
-  onBack,
   initialProvince = "All Provinces",
-  selectedDistrict = "",
+  selectedDistrict = "Nyamagabe",
 }) {
-  const [households, setHouseholds] = useState([]);
-  const [provinceOptions, setProvinceOptions] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [provinceData, setProvinceData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [province, setProvince] = useState(initialProvince);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [province, setProvince] = useState("All Provinces");
-  useEffect(() => {
-  setProvince(initialProvince);
-}, [initialProvince]);
-const [activeDistrict, setActiveDistrict] = useState(selectedDistrict);
-  const [povertyStatus, setPovertyStatus] = useState("All");
-  const [educationLevel, setEducationLevel] = useState("All");
-  const [financialAccess, setFinancialAccess] = useState("All");
-  const [search, setSearch] = useState("");
 
-useEffect(() => {
-  setProvince(initialProvince);
-}, [initialProvince]);
+  useEffect(() => {
+    setProvince(initialProvince || "All Provinces");
+  }, [initialProvince]);
 
   useEffect(() => {
     const controller = new AbortController();
 
-    async function loadData() {
+    async function loadOfficialData() {
       setLoading(true);
       setError("");
+
       try {
-        const response = await fetch(`${API_BASE}/api/households`, {
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error(`API request failed (${response.status})`);
-        const payload = await response.json();
-        const rows = Array.isArray(payload)
-          ? payload
-          : Array.isArray(payload.households)
-            ? payload.households
-            : Array.isArray(payload.data)
-              ? payload.data
-              : [];
-        setHouseholds(rows);
-        setProvinceOptions([...new Set(rows.map((row) => row.province).filter(Boolean))].sort());
+        const [summaryResponse, provinceResponse, districtResponse] =
+          await Promise.all([
+            fetch(`${API_BASE}/api/dashboard/summary`, {
+              signal: controller.signal,
+            }),
+            fetch(`${API_BASE}/api/poverty/province`, {
+              signal: controller.signal,
+            }),
+            fetch(`${API_BASE}/api/poverty/district`, {
+              signal: controller.signal,
+            }),
+          ]);
+
+        if (
+          !summaryResponse.ok ||
+          !provinceResponse.ok ||
+          !districtResponse.ok
+        ) {
+          throw new Error("Official poverty data could not be loaded.");
+        }
+
+        const [summaryJson, provinceJson, districtJson] = await Promise.all([
+          summaryResponse.json(),
+          provinceResponse.json(),
+          districtResponse.json(),
+        ]);
+
+        const provinces = Array.isArray(provinceJson)
+          ? provinceJson
+          : provinceJson.value;
+
+        if (!Array.isArray(provinces) || !Array.isArray(districtJson)) {
+          throw new Error("The poverty API returned an unexpected data format.");
+        }
+
+        setSummary(summaryJson);
+        setProvinceData(provinces);
+        setDistrictData(districtJson);
       } catch (err) {
         if (err.name !== "AbortError") {
-          setError("Could not load household records. Make sure the FastAPI server is running on port 8000.");
+          console.error("Poverty Explorer data error:", err);
+          setError(err.message || "Poverty data could not be loaded.");
+          setSummary(null);
+          setProvinceData([]);
+          setDistrictData([]);
         }
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
-    loadData();
+    loadOfficialData();
+
     return () => controller.abort();
   }, []);
 
-  const filtered = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return households.filter((row) => {
-      const matchesProvince = province === "All Provinces" || row.province === province;
-      const isPoor = Number(row.poverty_status) === 1;
-      const matchesPoverty =
-        povertyStatus === "All" ||
-        (povertyStatus === "Poor" && isPoor) ||
-        (povertyStatus === "Not poor" && row.poverty_status != null && !isPoor);
-      const matchesEducation = educationLevel === "All" || row.education_level === educationLevel;
-      const matchesFinancial = financialAccess === "All" || row.financial_access === financialAccess;
-      const matchesSearch =
-        !term ||
-        [row.hhid, row.province, row.education_level, row.financial_access, row.poverty_group]
-          .some((value) => String(value ?? "").toLowerCase().includes(term));
-      return matchesProvince && matchesPoverty && matchesEducation && matchesFinancial && matchesSearch;
-    });
-  }, [households, province, povertyStatus, educationLevel, financialAccess, search]);
+  const filteredDistricts = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-  const metrics = useMemo(() => {
-    const povertyKnown = filtered.filter((row) => row.poverty_status != null);
-    const poor = povertyKnown.filter((row) => Number(row.poverty_status) === 1).length;
-    const sizes = filtered.map((row) => Number(row.household_size)).filter(Number.isFinite);
-    const sizeAverage = sizes.length ? sizes.reduce((sum, value) => sum + value, 0) / sizes.length : null;
-    return {
-      total: filtered.length,
-      poor,
-      povertyRate: povertyKnown.length ? (poor / povertyKnown.length) * 100 : null,
-      avgSize: sizeAverage,
-      povertyDenominator: povertyKnown.length,
-    };
-  }, [filtered]);
+    return districtData
+      .filter((item) => {
+        const districtName = item.district || "";
+        const districtProvince = DISTRICT_PROVINCE[districtName];
 
-  const provinceRows = useMemo(() => {
-    const grouped = new Map();
-    filtered.forEach((row) => {
-      if (!row.province) return;
-      const current = grouped.get(row.province) || { label: row.province, total: 0, known: 0, poor: 0 };
-      current.total += 1;
-      if (row.poverty_status != null) {
-        current.known += 1;
-        if (Number(row.poverty_status) === 1) current.poor += 1;
-      }
-      grouped.set(row.province, current);
-    });
-    return [...grouped.values()]
-      .map((row) => ({ ...row, rate: row.known ? (row.poor / row.known) * 100 : null }))
-      .sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1));
-  }, [filtered]);
+        const matchesProvince =
+          province === "All Provinces" ||
+          districtProvince === province;
 
-  const educationRows = useMemo(() => {
-    const grouped = new Map();
-    filtered.forEach((row) => {
-      const label = row.education_level || "Unknown";
-      grouped.set(label, (grouped.get(label) || 0) + 1);
-    });
-    return [...grouped.entries()].map(([label, count]) => ({ label, count }));
-  }, [filtered]);
+        const matchesSearch = districtName.toLowerCase().includes(query);
 
-  const financialRows = useMemo(() => {
-    const grouped = new Map();
-    filtered.forEach((row) => {
-      const label = row.financial_access || "Unknown";
-      grouped.set(label, (grouped.get(label) || 0) + 1);
-    });
-    return [...grouped.entries()].map(([label, count]) => ({ label, count }));
-  }, [filtered]);
+        return matchesProvince && matchesSearch;
+      })
+      .sort((a, b) => a.district.localeCompare(b.district));
+  }, [districtData, province, search]);
 
-  const educationOptions = useMemo(
-    () => [...new Set(households.map((row) => row.education_level).filter(Boolean))].sort(),
-    [households],
-  );
-  const financialOptions = useMemo(
-    () => [...new Set(households.map((row) => row.financial_access).filter(Boolean))].sort(),
-    [households],
+  const selectedProvinceData = provinceData.find(
+    (item) => item.province === province
   );
 
-  function resetFilters() {
-    setProvince("All Provinces");
-    setPovertyStatus("All");
-    setEducationLevel("All");
-    setFinancialAccess("All");
-    setSearch("");
-    setActiveDistrict("");
-  }
+  const selectedDistrictData = districtData.find(
+    (item) => item.district === selectedDistrict
+  );
+
+  const areaRate =
+    province === "All Provinces"
+      ? summary?.poverty_rate
+      : selectedProvinceData?.poverty_rate;
+
+  const source =
+    summary?.poverty_source || "National Institute of Statistics of Rwanda";
+
+  const referencePeriod = summary?.reference_period || "2023–2024";
 
   return (
-    <div className="poverty-explorer">
-      <header className="pe-page-header">
+    <main className="poverty-explorer">
+      <header className="pe-header">
         <div>
-          <h1>RP-FVIP / ANALYTICS</h1>
-          {activeDistrict && (
-  <div className="pe-district-context">
-    <strong>Selected District: {activeDistrict}</strong>
-    <p>
-      Showing available demo household data for {province}.
-      District-level household records are not yet available
-      in the current database.
-    </p>
-  </div>
-)}
-
+          <h1>Poverty Explorer</h1>
+          <p>
+            Explore verified poverty estimates across Rwanda’s provinces
+            and districts.
+          </p>
         </div>
+
         <div className="pe-source-badge">
-        
-          <div><strong>Demo database</strong><small>Prototype data · not official EICV7 estimates</small></div>
+          <PEIcon type="database" />
+          <span>NISR EICV7</span>
         </div>
       </header>
 
-      <section className="pe-filter-panel" aria-label="Poverty Explorer filters">
-        <div className="pe-filter-heading">
-          <div><p>Filters apply to the indicators, charts and table below.</p></div>
-          <button type="button" className="pe-reset" onClick={resetFilters}>Reset filters</button>
+      {error && (
+        <div className="pe-error" role="alert">
+          {error} Check that the backend API is running and accessible.
         </div>
-        <div className="pe-filter-grid">
-          <label>Province
-     <select
-  value={province}
-  onChange={(e) => {
-    setProvince(e.target.value);
-    setActiveDistrict("");
-  }}
->
-              <option>All Provinces</option>
-              {provinceOptions.map((option) => <option key={option}>{option}</option>)}
-            </select>
-          </label>
-          <label>Poverty status
-            <select value={povertyStatus} onChange={(event) => setPovertyStatus(event.target.value)}>
-              <option>All</option><option>Poor</option><option>Not poor</option>
-            </select>
-          </label>
-          <label>Education level
-            <select value={educationLevel} onChange={(event) => setEducationLevel(event.target.value)}>
-              <option>All</option>
-              {educationOptions.map((option) => <option key={option}>{option}</option>)}
-            </select>
-          </label>
-          <label>Financial access
-            <select value={financialAccess} onChange={(event) => setFinancialAccess(event.target.value)}>
-              <option>All</option>
-              {financialOptions.map((option) => <option key={option}>{option}</option>)}
-            </select>
-          </label>
-        </div>
+      )}
+
+      <section className="pe-metrics-grid">
+        <MetricCard
+          icon="poverty"
+          label="National poverty rate"
+          value={loading ? "Loading…" : formatPercent(summary?.poverty_rate)}
+          detail={`NISR EICV7 · ${referencePeriod}`}
+        />
+        <MetricCard
+          icon="extreme"
+          label="Extreme poverty"
+          value={
+            loading
+              ? "Loading…"
+              : formatPercent(summary?.extreme_poverty_rate)
+          }
+          detail="National estimate"
+        />
+        <MetricCard
+          icon="mpi"
+          label="MPI index"
+          value={loading ? "Loading…" : formatIndex(summary?.mpi_index)}
+          detail="Multidimensional poverty"
+        />
+        <MetricCard
+          icon="location"
+          label={
+            province === "All Provinces"
+              ? "National / selected poverty rate"
+              : `${province} poverty rate`
+          }
+          value={loading ? "Loading…" : formatPercent(areaRate)}
+          detail={
+            province === "All Provinces"
+              ? "All provinces"
+              : "Selected province"
+          }
+        />
       </section>
 
-      {error && <div className="pe-alert" role="alert"><strong>Data connection issue</strong><span>{error}</span><button type="button" onClick={() => window.location.reload()}>Retry</button></div>}
-
-      <div className="pe-kpi-grid">
-        <MetricCard label="Households in selection" value={loading ? "…" : formatNumber(metrics.total)} detail="Records after applying filters" icon="⌂" />
-        <MetricCard label="Poverty rate" value={loading ? "…" : formatPercent(metrics.povertyRate)} detail={`${metrics.povertyDenominator} records with known poverty status`} icon="%" tone="purple" />
-        <MetricCard label="Households classified as poor" value={loading ? "…" : formatNumber(metrics.poor)} detail="Based on poverty_status = 1" icon="!" tone="orange" />
-        <MetricCard label="Average household size" value={loading ? "…" : (metrics.avgSize == null ? "-" : metrics.avgSize.toFixed(1))} detail="Excludes missing household sizes" icon="↗" tone="green" />
-      </div>
-
-      <div className="pe-chart-grid">
-        <section className="pe-panel pe-province-panel">
-          <div className="pe-panel-heading">
-            <div><h2>Poverty rate by province</h2><p>Calculated from the records in the current selection.</p></div>
-            <span className="pe-mini-tag">Demo</span>
+      <section className="pe-panel">
+        <div className="pe-panel-header">
+          <div>
+            <h2>Poverty by province</h2>
+            <p>Official provincial estimates from NISR EICV7.</p>
           </div>
-          {provinceRows.length ? (
-            <div className="pe-province-list">
-              {provinceRows.map((row) => (
-                <button type="button" className="pe-province-row" key={row.label} onClick={() => setProvince(row.label)}>
-                  <span className="pe-province-name">{row.label}</span>
-                  <span className="pe-province-track"><span style={{ width: `${Math.max(0, Math.min(100, row.rate ?? 0))}%` }} /></span>
-                  <strong>{formatPercent(row.rate)}</strong>
-                  <small>{row.known} known / {row.total} households</small>
-                </button>
-              ))}
-            </div>
-          ) : <p className="pe-empty">No province records for these filters.</p>}
-          <p className="pe-chart-note">Only provinces represented in the available records are shown. This is not an official provincial poverty estimate.</p>
-        </section>
-        <BarList title="Education profile" subtitle="Household records by recorded education level." rows={educationRows} />
-        <BarList title="Financial access profile" subtitle="Records grouped by the financial_access field." rows={financialRows} />
-      </div>
+          <span className="pe-period">{referencePeriod}</span>
+        </div>
 
-      <section className="pe-panel pe-table-panel">
-        <div className="pe-panel-heading pe-table-heading">
-          <div><h2>Household records</h2><p>{formatNumber(filtered.length)} records match the selected filters.</p></div>
-          <label className="pe-search">Search records
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="HHID, province, education…" />
-          </label>
-        </div>
-        <div className="pe-table-wrap">
-          <table>
-            <thead><tr><th>Household ID</th><th>Province</th><th>Household size</th><th>Education</th><th>Financial access</th><th>Poverty status</th></tr></thead>
-            <tbody>
-              {filtered.map((row, index) => (
-                <tr key={row.hhid ?? index}>
-                  <td>{row.hhid ?? "-"}</td>
-                  <td>{row.province ?? ""}</td>
-                  <td>{row.household_size ?? "-"}</td>
-                  <td>{row.education_level ?? "-"}</td>
-                  <td><span className={`pe-status ${row.financial_access === "Has access" ? "pe-status-good" : row.financial_access === "No access" ? "pe-status-warn" : ""}`}>{row.financial_access ?? "Unknown"}</span></td>
-                  <td><span className={`pe-status ${Number(row.poverty_status) === 1 ? "pe-status-warn" : row.poverty_status != null ? "pe-status-good" : ""}`}>{row.poverty_status == null ? "Unknown" : Number(row.poverty_status) === 1 ? "Poor" : "Not poor"}</span></td>
-                </tr>
-              ))}
-              {!filtered.length && <tr><td className="pe-no-rows" colSpan="6">{loading ? "Loading household records…" : "No records match the selected filters."}</td></tr>}
-            </tbody>
-          </table>
-        </div>
-        <div className="pe-table-footer"><span>Showing {filtered.length} of {households.length} loaded records</span><span>Source: local RP-FVIP demo database</span></div>
+        {loading ? (
+          <p className="pe-status">Loading official provincial estimates…</p>
+        ) : provinceData.length === 0 ? (
+          <p className="pe-status">No verified provincial data available.</p>
+        ) : (
+          <div className="pe-province-list">
+            {provinceData.map((item) => (
+              <button
+                type="button"
+                className={`pe-province-row ${
+                  province === item.province ? "is-selected" : ""
+                }`}
+                key={item.province}
+                onClick={() => setProvince(item.province)}
+                aria-pressed={province === item.province}
+              >
+                <span className="pe-province-name">{item.province}</span>
+                <span className="pe-bar-track">
+                  <span
+                    className="pe-bar-fill"
+                    style={{
+                      width: `${Math.max(
+                        0,
+                        Math.min(100, Number(item.poverty_rate) || 0)
+                      )}%`,
+                    }}
+                  />
+                </span>
+                <strong className="pe-province-value">
+                  {formatPercent(item.poverty_rate)}
+                </strong>
+              </button>
+            ))}
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="pe-reset-button"
+          onClick={() => setProvince("All Provinces")}
+        >
+          View all provinces
+        </button>
       </section>
 
-    
-<footer className="rp-page-footer">
-  <div className="rp-page-footer__brand">
-    <strong>RP-FVIP</strong>
-    <span>· Poverty Explorer</span>
-  </div>
+      <section className="pe-panel pe-district-panel">
+        <div className="pe-panel-header">
+          <div>
+            <h2>District poverty estimates</h2>
+            <p>
+              Search districts and filter the list by province. Select a
+              province above or use the filter below.
+            </p>
+          </div>
+        </div>
 
-  <div className="rp-page-footer__note">
-    Demo data analysis only
-  </div>
+        <div className="pe-filters">
+          <label className="pe-filter-control">
+            <span>Province</span>
+            <select
+              value={province}
+              onChange={(event) => setProvince(event.target.value)}
+            >
+              <option value="All Provinces">All Provinces</option>
+              {PROVINCES.map((item) => (
+                <option value={item} key={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
 
-  {onBack && (
-    <button
-      className="rp-back-button"
-      type="button"
-      onClick={onBack}
-    >
-       Back to Dashboard
-    </button>
-  )}
-</footer>
-    </div>
+          <label className="pe-filter-control pe-search-control">
+            <span>Search district</span>
+            <span className="pe-search-input">
+              <PEIcon type="search" />
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Enter district name"
+              />
+            </span>
+          </label>
+        </div>
+
+        {loading ? (
+          <p className="pe-status">Loading district estimates…</p>
+        ) : (
+          <>
+            <div className="pe-table-wrap">
+              <table className="pe-table">
+                <thead>
+                  <tr>
+                    <th>District</th>
+                    <th>Province</th>
+                    <th>Poverty rate</th>
+                    <th>Reference period</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredDistricts.map((item) => (
+                    <tr
+                      key={item.district}
+                      className={
+                        item.district === selectedDistrict
+                          ? "is-selected"
+                          : ""
+                      }
+                    >
+                      <td>{item.district}</td>
+                      <td>{DISTRICT_PROVINCE[item.district] || "—"}</td>
+                      <td>
+                        <strong>{formatPercent(item.poverty_rate)}</strong>
+                      </td>
+                      <td>{item.reference_period || referencePeriod}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {filteredDistricts.length === 0 && (
+                <p className="pe-status">
+                  No districts match your search and province selection.
+                </p>
+              )}
+            </div>
+
+            <div className="pe-table-footer">
+              Showing {filteredDistricts.length} of {districtData.length}{" "}
+              districts
+            </div>
+          </>
+        )}
+      </section>
+
+      <footer className="pe-data-note">
+        <strong>Data source:</strong> {source}. Reference period:{" "}
+        {referencePeriod}. Household counts and other indicators are not
+        estimated from demonstration records.
+        {selectedDistrictData && (
+          <span>
+            {" "}
+            Selected district: {selectedDistrictData.district} (
+            {formatPercent(selectedDistrictData.poverty_rate)}).
+          </span>
+        )}
+      </footer>
+    </main>
   );
 }

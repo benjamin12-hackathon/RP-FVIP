@@ -1,5 +1,6 @@
 
 import { useEffect, useMemo, useState } from "react";
+import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import "./App.css";
 import PovertyExplorer from "./PovertyExplorer";
 import VulnerabilityProfiler from "./VulnerabilityProfiler";
@@ -35,26 +36,6 @@ const verifiedProvinceIndicators = {
   Western: { poverty: 37.4, extreme: 9.0, mpi: 33.5 },
   Kigali: { poverty: 9.1, extreme: 1.1, mpi: 12.4 },
 };
-
-// Illustrative district values only; not official NISR estimates.
-const districts = [
-  { name: "Nyamagabe", value: 51.4 },
-  { name: "Gisagara", value: 45.6 },
-  { name: "Nyanza", value: 43.3 },
-  { name: "Nyamasheke", value: 42.8 },
-  { name: "Rusizi", value: 44.2 },
-  { name: "Rutsiro", value: 40.8 },
-  { name: "Kamonyi", value: 39.7 },
-  { name: "Nyaruguru", value: 39.7 },
-  { name: "Karongi", value: 38.2 },
-  { name: "Rubavu", value: 38.8 },
-  { name: "Kayonza", value: 36.6 },
-  { name: "Nyagatare", value: 36.4 },
-  { name: "Kirehe", value: 14.2 },
-  { name: "Gatsibo", value: 18.4 },
-  { name: "Gasabo", value: 11.1 },
-  { name: "Kicukiro", value: 6.9 },
-];
 
 const districtProvince = {
   Burera: "Northern",
@@ -490,7 +471,7 @@ const [databaseStatus, setDatabaseStatus] = useState("checking");
     return () => controller.abort();
   }, []);
 
-  
+
 useEffect(() => {
   const controller = new AbortController();
 
@@ -622,7 +603,7 @@ if (!summaryResponse.ok || !provinceResponse.ok) {
 }
 
 
-     
+
 const summary = await summaryResponse.json();
 const provincePayload = await provinceResponse.json();
 
@@ -657,10 +638,6 @@ setProvinceChartData(
   return () => controller.abort();
 }, [province]);
 
-  const selectedDistrictData =
-    districts.find(
-      (item) => normalizeName(item.name) === normalizeName(selectedDistrict)
-    ) || null;
 
   const filteredDistrictNames =
     province === "All Provinces"
@@ -669,7 +646,7 @@ setProvinceChartData(
           (name) => districtProvince[name] === province
         );
 
-  
+
 const selectionHasUnsupportedFilters =
   district !== "All Districts" ||
   area !== "All" ||
@@ -743,7 +720,14 @@ const selectionScope = getSelectionScope(
     }
   };
 
-  
+
+const selectedOfficialDistrict = officialDistrictData.find(
+  (item) =>
+    normalizeName(item.district) ===
+    normalizeName(selectedDistrict)
+);
+
+
 const handleExploreDistrict = () => {
   const provinceForDistrict = districtProvince[selectedDistrict];
 
@@ -771,7 +755,7 @@ const handleExploreDistrict = () => {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        
+
 <button
   type="button"
   className="brand"
@@ -860,7 +844,7 @@ const handleExploreDistrict = () => {
                   <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
                   <path d="M10 21h4" />
                 </svg>
-               
+
                {hasUnreadNotifications && (
                <span className="notification-dot" />
                  )}
@@ -962,7 +946,7 @@ const handleExploreDistrict = () => {
                     <path d="M4 21v-2a8 8 0 0 1 16 0v2z" />
                   </svg>
                 </span>
-              
+
               </button>
 
               {userMenuOpen && (
@@ -1012,7 +996,7 @@ const handleExploreDistrict = () => {
               <section className="page-header">
                 <div>
                   <h1>
-                    Welcome to the Rwanda Poverty &amp; Vulnerability 
+                    Welcome to the Rwanda Poverty &amp; Vulnerability
                     Intelligence Platform
                   </h1>
                   <p>
@@ -1175,10 +1159,10 @@ const handleExploreDistrict = () => {
                   </p>
                 </div>
 
-               
+
 <section className="rwanda-map-card map-panel">
 
-                
+
 <div className="rwanda-map-card-header">
   <div>
     <h2>Poverty Rate by District</h2>
@@ -1186,15 +1170,6 @@ const handleExploreDistrict = () => {
   NISR EICV7 monetary poverty rate · 2023–2024
 </p>
   </div>
-  <span className="demo-badge">
-  {officialDistrictLoading
-    ? "Loading official data…"
-    : officialDistrictError
-      ? "Official data unavailable"
-      : officialDistrictData.length === 30
-        ? "Official NISR data"
-        : "Official data incomplete"}
-</span>
 </div>
 
 
@@ -1225,13 +1200,16 @@ const handleExploreDistrict = () => {
                       <div className="map-background">
                         <div className="map-svg-area">
                           <span className="map-country uganda">UGANDA</span>
-                          <span className="map-country drc">DRC</span>
+                          <span className="map-country drc">DR CONGO</span>
                           <span className="map-country tanzania">TANZANIA</span>
                           <span className="map-country burundi">BURUNDI</span>
 
-                          <span className="map-north">
-                            N <span>▲</span>
-                          </span>
+
+<span className="map-north">
+  <span className="map-north-label">N</span>
+  <span className="map-north-arrow">▲</span>
+</span>
+
 
                          <svg
   className="rwanda-map-svg"
@@ -1248,7 +1226,7 @@ const handleExploreDistrict = () => {
   const name = getDistrictName(feature);
   if (!name) return null;
 
-                              
+
 const officialDistrict = officialDistrictData.find(
   (item) =>
     normalizeName(item.district) === normalizeName(name)
@@ -1288,7 +1266,7 @@ const hasValue =
                                   }`}
                                   role="button"
                                   tabIndex={0}
-                                  
+
 aria-label={
   hasValue
     ? `${name} District, official NISR poverty rate ${value}%`
@@ -1304,7 +1282,7 @@ aria-label={
                                     }
                                   }}
                                 >
-                                  
+
 <title>
   {hasValue
     ? `${name} District - NISR EICV7 poverty rate: ${value}%`
@@ -1315,38 +1293,38 @@ aria-label={
 })}
 </g>
 </svg>
+
+
 <div className="dashboard-map-controls">
   <button
-    type="button"
     onClick={() =>
       setDashboardMapZoom((zoom) => Math.min(2.2, zoom + 0.15))
     }
     aria-label="Zoom in"
     title="Zoom in"
   >
-    +
+    <ZoomIn size={18} strokeWidth={2} />
   </button>
 
   <button
-    type="button"
     onClick={() =>
       setDashboardMapZoom((zoom) => Math.max(0.8, zoom - 0.15))
     }
     aria-label="Zoom out"
     title="Zoom out"
   >
-    −
+    <ZoomOut size={18} strokeWidth={2} />
   </button>
 
   <button
-    type="button"
     onClick={() => setDashboardMapZoom(1)}
     aria-label="Reset map view"
     title="Reset map view"
   >
-    ⌂
+    <RotateCcw size={17} strokeWidth={2} />
   </button>
 </div>
+
                         </div>
 
                         <div className="map-legend">
@@ -1368,13 +1346,13 @@ aria-label={
                           </div>
                           <div className="map-legend-item">
                             <span className="map-legend-dot unknown" />
-                            <span>No demo data</span>
+                            <span>No verified data</span>
                           </div>
                         </div>
                       </div>
                     )}
 
-                    
+
                   </div>
                 </section>
 
@@ -1434,48 +1412,39 @@ aria-label={
               </section>
 
 <section className="lower-grid">
+
   {/* Multidimensional Poverty */}
   <div className="panel lower-module-panel mpi-panel">
     <PanelHeader
       title="Multidimensional Poverty"
-    subtitle="Illustrative dimension scores • Demo data"
+      subtitle="Official NISR EICV7 indicators"
     />
 
     <div className="progress-list">
-    
-<Progress
-  label="Education"
-  value={moduleData?.mpi?.education}
-/>
-<Progress
-  label="Health"
-  value={moduleData?.mpi?.health}
-/>
-<Progress
-  label="Living Standards"
-  value={moduleData?.mpi?.living_standards}
-/>
-<Progress
-  label="Housing"
-  value={moduleData?.mpi?.housing}
-/>
-<Progress
-  label="Water & Sanitation"
-  value={moduleData?.mpi?.water_sanitation}
-/>
-<Progress
-  label="Electricity"
-  value={moduleData?.mpi?.electricity}
-/>
-<Progress
-  label="Employment"
-  value={moduleData?.mpi?.employment}
-/>
+      <Progress
+        label="MPI Incidence"
+        value={moduleData?.mpi?.incidence}
+      />
+
+      <Progress
+        label="MPI Intensity"
+        value={moduleData?.mpi?.intensity}
+      />
+
+      <div className="mpi-index-row">
+        <span>MPI Index: </span>
+        <strong>
+          {moduleData?.mpi?.index == null
+            ? "—"
+            : Number(moduleData.mpi.index).toFixed(3)}
+        </strong>
+      </div>
     </div>
 
     <p className="module-data-note">
-      Demo values only. Verified indicators will follow the selected filters
-      once the EICV7 data pipeline is connected.
+      Source: NISR EICV7. Reference period: 2023-2024.
+      Values follow the selected province. Dimension-specific
+      indicators are not currently available.
     </p>
 
     <button
@@ -1487,43 +1456,45 @@ aria-label={
     </button>
   </div>
 
+
   {/* Household Vulnerability Profile */}
   <div className="panel lower-module-panel vulnerability-panel">
     <PanelHeader
       title="Household Vulnerability Profile"
-      subtitle="Illustrative indicators • Demo data"
+      subtitle="Verified indicator availability"
     />
 
     <div className="vulnerability-list">
-<ProfileRow
-  label="Large household size (≥ 6)"
-  value={displayPercent(moduleData?.vulnerability?.large_households)}
-/>
-<ProfileRow
-  label="No formal education"
-  value={displayPercent(moduleData?.vulnerability?.no_formal_education)}
-/>
-<ProfileRow
-  label="Unemployment"
-  value={displayPercent(moduleData?.vulnerability?.unemployment)}
-/>
-<ProfileRow
-  label="Poor housing conditions"
-  value={displayPercent(moduleData?.vulnerability?.poor_housing)}
-/>
-<ProfileRow
-  label="No financial access"
-  value={displayPercent(moduleData?.vulnerability?.no_financial_access)}
-/>
-<ProfileRow
-  label="Dependents"
-  value={displayPercent(moduleData?.vulnerability?.dependents)}
-/>
+      <ProfileRow
+        label="Large household size (≥ 6)"
+        value={displayPercent(moduleData?.vulnerability?.large_households)}
+      />
+      <ProfileRow
+        label="No formal education"
+        value={displayPercent(moduleData?.vulnerability?.no_formal_education)}
+      />
+      <ProfileRow
+        label="Unemployment"
+        value={displayPercent(moduleData?.vulnerability?.unemployment)}
+      />
+      <ProfileRow
+        label="Poor housing conditions"
+        value={displayPercent(moduleData?.vulnerability?.poor_housing)}
+      />
+      <ProfileRow
+        label="Financially excluded (FinScope 2024)"
+        value={displayPercent(moduleData?.vulnerability?.no_financial_access)}
+      />
+      <ProfileRow
+        label="Dependents"
+        value={displayPercent(moduleData?.vulnerability?.dependents)}
+      />
     </div>
 
     <p className="module-data-note">
-      Demo values only. Indicator definitions and estimates will be verified
-      against the EICV7 data dictionary.
+      Financial exclusion is based on FinScope 2024.
+      Other vulnerability estimates are unavailable in the current
+      verified dataset and are not displayed as confirmed findings.
     </p>
 
     <button
@@ -1535,63 +1506,70 @@ aria-label={
     </button>
   </div>
 
+
   {/* Financial Inclusion */}
   <div className="panel lower-module-panel financial-panel">
     <PanelHeader
       title="Financial Inclusion"
-      subtitle="Illustrative access overview • Demo data"
+      subtitle="Verified FinScope 2024 indicators"
     />
 
     <div className="donut-wrapper">
-    
-<div
-  className="donut"
-  style={{
-    background:
-      moduleData?.financial?.has_access == null
-        ? "#e8eef4"
-        : `conic-gradient(
-            #40aa7b 0% ${Math.max(
-              0,
-              Math.min(Number(moduleData.financial.has_access), 100)
-            )}%,
-            #f59e0b ${Math.max(
-              0,
-              Math.min(Number(moduleData.financial.has_access), 100)
-            )}% 100%
-          )`,
-  }}
->
-  <div className="donut-center">
-    <strong>
-      {displayPercent(moduleData?.financial?.has_access)}
-    </strong>
-    <span>Included</span>
-  </div>
-</div>
+      <div
+        className="donut"
+        style={{
+          background:
+            moduleData?.financial?.has_access == null
+              ? "#e8eef4"
+              : `conic-gradient(
+                  #40aa7b 0% ${Math.max(
+                    0,
+                    Math.min(
+                      Number(moduleData.financial.has_access),
+                      100
+                    )
+                  )}%,
+                  #f59e0b ${Math.max(
+                    0,
+                    Math.min(
+                      Number(moduleData.financial.has_access),
+                      100
+                    )
+                  )}% 100%
+             )`,
+        }}
+      >
+        <div className="donut-center">
+          <strong>
+            {displayPercent(moduleData?.financial?.has_access)}
+          </strong>
+          <span>Included</span>
+        </div>
+      </div>
     </div>
 
     <div className="financial-legend">
-     <LegendRow
-  color="green"
-  label="Formal access"
-  value={displayPercent(moduleData?.financial?.formal_access)}
-/>
-<LegendRow
-  color="blue"
-  label="Informal access"
-  value={displayPercent(moduleData?.financial?.informal_access)}
-/>
-<LegendRow
-  color="orange"
-  label="Financially excluded"
-  value={displayPercent(moduleData?.financial?.financially_excluded)}
-/>
+      <LegendRow
+        color="green"
+        label="Formally served"
+        value={displayPercent(moduleData?.financial?.formal_access)}
+      />
+      <LegendRow
+        color="blue"
+        label="Informal ONLY"
+        value={displayPercent(moduleData?.financial?.informal_access)}
+      />
+      <LegendRow
+        color="orange"
+        label="Financially excluded"
+        value={displayPercent(moduleData?.financial?.financially_excluded)}
+      />
     </div>
 
     <p className="module-data-note">
-      Demo values only. The final breakdown will depend on verified financial
-      access variables and the selected population.
+      Source: FinScope 2024. Financial inclusion and formally served
+      are separate indicators. Percentages may not sum to 100 because
+      of rounding and differences between categories.
     </p>
 
     <button
@@ -1602,31 +1580,45 @@ aria-label={
       Explore Financial Inclusion <span aria-hidden="true"></span>
     </button>
   </div>
+
 </section>
 
-              <section className="district-focus">
-                <div>
-                  <span className="eyebrow">SELECTED DISTRICT </span>
-                  <h2>{selectedDistrict} District</h2>
-                  <p>
-                    Illustrative prototype value only. Replace with a verified district estimate before publication.
-                  </p>
-                </div>
-                <div className="district-stat">
-                  <span>Illustrative poverty estimate</span>
-                  <strong>
-                    {selectedDistrictData ? `${selectedDistrictData.value}%` : "—"}
-                  </strong>
-                </div>
-                
-<button
-  type="button"
-  className="primary-button"
-  onClick={handleExploreDistrict}
->
-  Explore District
-</button>
-              </section>
+
+
+<div className="district-focus">
+  <div>
+    <span className="eyebrow">SELECTED DISTRICT</span>
+    <h2>{selectedDistrict} District</h2>
+    <p>
+      {officialDistrictLoading
+        ? "Loading official district poverty data..."
+        : selectedOfficialDistrict
+          ? "Official district poverty data from NISR EICV7 (2023-2024)."
+          : officialDistrictError
+            ? "Official district poverty data could not be loaded."
+            : "No verified poverty rate is available for this district."}
+    </p>
+  </div>
+
+  <div className="district-stat">
+    <span>District poverty rate</span>
+    <strong>
+      {selectedOfficialDistrict
+        ? `${Number(selectedOfficialDistrict.poverty_rate).toFixed(1)}%`
+        : "—"}
+    </strong>
+  </div>
+
+  <button
+    type="button"
+    className="primary-button"
+    onClick={() => handleNavigation("poverty")}
+  >
+    Explore Poverty <span aria-hidden="true"></span>
+  </button>
+</div>
+
+
 
               <section className="quick-actions">
                 <QuickAction
@@ -1681,14 +1673,20 @@ aria-label={
       province={province}
     />
   ) : activePage === "map" ? (
-    <RwandaMap
-      districtMapFeatures={districtMapFeatures}
-      mapBounds={mapBounds}
-      districtMapLoading={districtMapLoading}
-      districtMapError={districtMapError}
-      selectedDistrict={selectedDistrict}
-      onSelectDistrict={setSelectedDistrict}
-    />
+
+<RwandaMap
+  districtMapFeatures={districtMapFeatures}
+  mapBounds={mapBounds}
+  districtMapLoading={districtMapLoading}
+  districtMapError={districtMapError}
+  officialDistrictData={officialDistrictData}
+  officialDistrictLoading={officialDistrictLoading}
+  officialDistrictError={officialDistrictError}
+  selectedDistrict={selectedDistrict}
+  onSelectDistrict={setSelectedDistrict}
+
+/>
+
     ) : activePage === "reports" ? (
   <InsightsReports
     dashboardSummary={dashboardSummary}
@@ -1697,7 +1695,7 @@ aria-label={
   />
   ) : (
 
-  
+
             <section className="placeholder-page">
               <span className="placeholder-icon">◆</span>
               <h1>{navigation.find((item) => item.id === activePage)?.label}</h1>

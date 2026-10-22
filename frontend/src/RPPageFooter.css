@@ -1,0 +1,127 @@
+
+/* ==========================================
+   RP-FVIP SHARED PAGE FOOTER
+   ========================================== */
+
+.rp-shared-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding: 25px 0 8px;
+  margin-top: 30px;
+  border-top: 1px solid #e2eaf2;
+  box-sizing: border-box;
+}
+
+.rp-shared-footer__brand {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rp-shared-footer__brand strong {
+  color: #245779;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.15px;
+}
+
+.rp-shared-footer__brand span {
+  color: #7a8fa4;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.rp-shared-footer__brand span::before {
+  content: "·";
+  margin-right: 10px;
+  color: #a0b1c0;
+}
+
+.rp-shared-footer__note {
+  color: #7a8fa4;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
+  margin-right: 50%;
+}
+
+.rp-shared-footer__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 20px;
+  border: 1px solid #cfe0ee;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #16466a;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.rp-shared-footer__button:hover {
+  border-color: #9fc5e2;
+  background: #f2f8fd;
+  box-shadow: 0 4px 12px rgba(22, 63, 96, 0.07);
+}
+
+.rp-shared-footer__button:active {
+  transform: translateY(1px);
+}
+
+.rp-shared-footer__button:focus-visible {
+  outline: 3px solid rgba(22, 141, 224, 0.25);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .rp-shared-footer {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+  }
+
+  .rp-shared-footer__note {
+    grid-column: 1;
+    grid-row: 2;
+    text-align: left;
+  }
+
+  .rp-shared-footer__button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .rp-shared-footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding-top: 20px;
+  }
+
+  .rp-shared-footer__note,
+  .rp-shared-footer__button {
+    grid-column: 1;
+    grid-row: auto;
+    text-align: left;
+  }
+
+  .rp-shared-footer__button {
+    justify-self: start;
+    min-height: 41px;
+  }
+}

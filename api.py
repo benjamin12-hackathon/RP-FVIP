@@ -329,77 +329,137 @@ def debug_finscope_provinces():
     finally:
         conn.close()
         
+
 @app.get("/api/dashboard/modules")
 def dashboard_modules(province: str = "All Provinces"):
     conn = get_connection()
 
     try:
-        rows = conn.execute(
-            """
-            SELECT
-                household_size,
-                education_level,
-                has_financial_account,
-                financial_access,
-                poverty_status
-            FROM households
-            WHERE (? = 'All Provinces' OR province = ?)
-            """,
-            (province, province),
-        ).fetchall()
+        is_national = province == "All Provinces"
 
-        total = len(rows)
-
-        if total == 0:
-            return {
-                "household_count": 0,
-                "vulnerability": {},
-                "financial": {},
-                "mpi": {},
-                "data_status": "no_data",
-            }
-
-        def percentage(count):
-            return round(count / total * 100, 1)
-
-        valid_sizes = [
-            row[0] for row in rows
-            if row[0] is not None
-        ]
-
-        no_financial_access = sum(
-            1 for row in rows
-            if row[3] == "No access"
+        # NISR uses shortened province names for EICV7/MPI.
+        mpi_geography = (
+            "Rwanda"
+            if is_national
+            else {
+                "Northern Province": "Northern",
+                "Southern Province": "Southern",
+                "Eastern Province": "Eastern",
+                "Western Province": "Western",
+                "Kigali City": "Kigali",
+            }.get(province, province)
         )
 
-        has_financial_access = sum(
-            1 for row in rows
-            if row[3] == "Has access"
+        # FinScope uses full province names.
+        finscope_geography = (
+            "Rwanda"
+            if is_national
+            else {
+                "Northern": "Northern Province",
+                "Southern": "Southern Province",
+                "Eastern": "Eastern Province",
+                "Western": "Western Province",
+                "Kigali": "Kigali City",
+            }.get(province, province)
         )
 
-        large_households = sum(
-            1 for row in rows
-            if row[0] is not None and row[0] >= 6
-        )
+        def get_value(
+            indicator,
+            geography_level,
+            geography_name,
+            source,
+            reference_period,
+        ):
+            row = conn.execute(
+                """
+                SELECT value
+                FROM official_indicators
+                WHERE indicator = ?
+                  AND geography_level = ?
+                  AND geography_name = ?
+                  AND source = ?
+                  AND reference_period = ?
+                LIMIT 1
+                """,
+                (
+                    indicator,
+                    geography_level,
+                    geography_name,
+                    source,
+                    reference_period,
+                ),
+            ).fetchone()
+
+            return row[0] if row else None
+
+        def get_mpi(indicator):
+            return get_value(
+                indicator,
+                "National" if is_national else "Province",
+                mpi_geography,
+                "National Institute of Statistics of Rwanda (NISR)",
+                "2023-2024",
+            )
+
+        def get_finscope(indicator):
+            return get_value(
+                indicator,
+                "National" if is_national else "Province",
+                finscope_geography,
+                "FinScope 2024",
+                "2024",
+            )
+
+        # National financial inclusion is explicitly published.
+        if is_national:
+            financial_inclusion = get_finscope("Financial Inclusion")
+            formal_access = get_finscope("Formally Served")
+        else:
+            excluded = get_finscope("Excluded")
+            financial_inclusion = (
+                round(100 - excluded, 1)
+                if excluded is not None
+                else None
+            )
+
+            banked = get_finscope("Banked")
+            other_formal = get_finscope("Other Formal (non-bank)")
+
+            formal_access = (
+                round(banked + other_formal, 1)
+                if banked is not None and other_formal is not None
+                else None
+            )
 
         return {
-            "household_count": total,
+            "household_count": None,
             "vulnerability": {
-                "large_households": percentage(large_households),
-                "no_financial_access": percentage(no_financial_access),
+                "large_households": None,
+                "no_financial_access": get_finscope("Excluded"),
                 "no_formal_education": None,
                 "unemployment": None,
                 "poor_housing": None,
                 "dependents": None,
             },
             "financial": {
-                "has_access": percentage(has_financial_access),
-                "no_access": percentage(no_financial_access),
-                "formal_access": None,
-                "informal_access": None,
-                "financially_excluded": percentage(no_financial_access),
+                "has_access": financial_inclusion,
+                "no_access": get_finscope("Excluded"),
+                "formal_access": formal_access,
+                "informal_access": get_finscope("Informal ONLY"),
+                "financially_excluded": get_finscope("Excluded"),
+                "banked": get_finscope("Banked"),
+                "other_formal": get_finscope("Other Formal (non-bank)"),
+                "source": "FinScope 2024",
+                "reference_period": "2024",
             },
             "mpi": {
+                # Official NISR indicators
+                "incidence": get_mpi("MPI Incidence"),
+                "intensity": get_mpi("MPI Intensity"),
+                "index": get_mpi("MPI Index"),
+
+                # Dimension-specific values are not available
+                # in the currently loaded official indicators.
                 "education": None,
                 "health": None,
                 "living_standards": None,
@@ -407,16 +467,11 @@ def dashboard_modules(province: str = "All Provinces"):
                 "water_sanitation": None,
                 "electricity": None,
                 "employment": None,
+                "source": "NISR EICV7",
+                "reference_period": "2023-2024",
             },
-            "education_distribution": {
-                level: percentage(
-                    sum(1 for row in rows if row[1] == level)
-                )
-                for level in sorted({
-                    row[1] for row in rows if row[1] is not None
-                })
-            },
-            "data_status": "demo",
+            "education_distribution": {},
+            "data_status": "official_partial",
         }
 
     finally:

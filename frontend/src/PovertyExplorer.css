@@ -128,3 +128,669 @@
   font-size: 13px;
   line-height: 1.5;
 }
+
+
+/* Poverty Explorer — official data interface */
+
+.poverty-explorer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+  color: var(--text-primary, #172b4d);
+}
+
+.poverty-explorer .pe-header,
+.poverty-explorer .pe-panel-header,
+.poverty-explorer .pe-metric-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.poverty-explorer .pe-header {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.poverty-explorer .pe-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+
+.poverty-explorer .pe-header p,
+.poverty-explorer .pe-panel-header p {
+  margin: 0;
+  color: var(--text-secondary, #718096);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.poverty-explorer .pe-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid #d9e8e1;
+  border-radius: 10px;
+  background: #f1f8f4;
+  color: #287653;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.poverty-explorer .pe-source-badge svg {
+  width: 18px;
+  height: 18px;
+}
+
+.poverty-explorer .pe-error {
+  padding: 14px 16px;
+  border: 1px solid #f2c7c7;
+  border-radius: 10px;
+  background: #fff5f5;
+  color: #a52d2d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.poverty-explorer .pe-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.poverty-explorer .pe-metric-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e7edf3;
+  border-radius: 14px;
+  background: var(--card-bg, #ffffff);
+  box-shadow: 0 3px 12px rgb(23 43 77 / 4%);
+}
+
+.poverty-explorer .pe-metric-top {
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.poverty-explorer .pe-metric-label {
+  color: var(--text-secondary, #718096);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.poverty-explorer .pe-metric-icon {
+  display: inline-flex;
+  flex: 0 0 42px;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #edf4ff;
+  color: #3569c8;
+}
+
+.poverty-explorer .pe-metric-value {
+  overflow-wrap: anywhere;
+  color: var(--text-primary, #172b4d);
+  font-size: clamp(25px, 2.5vw, 32px);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.8px;
+}
+
+.poverty-explorer .pe-metric-detail {
+  margin-top: 9px;
+  color: var(--text-secondary, #718096);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.poverty-explorer .pe-panel {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e7edf3;
+  border-radius: 14px;
+  background: var(--card-bg, #ffffff);
+  box-shadow: 0 3px 12px rgb(23 43 77 / 4%);
+}
+
+.poverty-explorer .pe-panel-header {
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.poverty-explorer .pe-panel-header h2 {
+  margin: 0 0 7px;
+  color: var(--text-primary, #172b4d);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.25px;
+}
+
+.poverty-explorer .pe-period {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f1f5fa;
+  color: #52647a;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.poverty-explorer .pe-province-list {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.poverty-explorer .pe-province-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 150px) minmax(50px, 1fr) 58px;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.poverty-explorer .pe-province-row:hover {
+  background: #f6f9fd;
+}
+
+.poverty-explorer .pe-province-row.is-selected {
+  border-color: #cbdcf8;
+  background: #f1f6ff;
+}
+
+.poverty-explorer .pe-province-name {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.poverty-explorer .pe-bar-track {
+  display: block;
+  overflow: hidden;
+  height: 9px;
+  border-radius: 999px;
+  background: #edf1f6;
+}
+
+.poverty-explorer .pe-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #4679d8;
+  transition: width 200ms ease;
+}
+
+.poverty-explorer .pe-province-value {
+  color: #2f5fae;
+  font-size: 13px;
+  font-weight: 750;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.poverty-explorer .pe-reset-button {
+  margin-top: 20px;
+  padding: 9px 13px;
+  border: 1px solid #d7e2f2;
+  border-radius: 9px;
+  background: #fff;
+  color: #3569c8;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.poverty-explorer .pe-reset-button:hover {
+  background: #f1f6ff;
+}
+
+.poverty-explorer .pe-filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(220px, 1.2fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.poverty-explorer .pe-filter-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-secondary, #718096);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.poverty-explorer .pe-filter-control select,
+.poverty-explorer .pe-search-input {
+  width: 100%;
+  min-height: 43px;
+  border: 1px solid #dce4ee;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text-primary, #172b4d);
+}
+
+.poverty-explorer .pe-filter-control select {
+  padding: 0 12px;
+  font: inherit;
+  font-weight: 500;
+}
+
+.poverty-explorer .pe-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+}
+
+.poverty-explorer .pe-search-input svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: #8290a3;
+}
+
+.poverty-explorer .pe-search-input input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 400;
+}
+
+.poverty-explorer .pe-filter-control select:focus,
+.poverty-explorer .pe-search-input:focus-within {
+  border-color: #7298e5;
+  outline: 3px solid rgb(70 121 216 / 12%);
+}
+
+.poverty-explorer .pe-table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.poverty-explorer .pe-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.poverty-explorer .pe-table th {
+  padding: 13px 15px;
+  border-bottom: 1px solid #e4eaf1;
+  background: #f7f9fc;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.poverty-explorer .pe-table th:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.poverty-explorer .pe-table th:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+.poverty-explorer .pe-table td {
+  padding: 15px;
+  border-bottom: 1px solid #edf1f5;
+  color: #43536a;
+  white-space: nowrap;
+}
+
+.poverty-explorer .pe-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.poverty-explorer .pe-table tbody tr.is-selected {
+  background: #f1f6ff;
+}
+
+.poverty-explorer .pe-table td:first-child {
+  color: var(--text-primary, #172b4d);
+  font-weight: 650;
+}
+
+.poverty-explorer .pe-table td strong {
+  color: #2f5fae;
+  font-variant-numeric: tabular-nums;
+}
+
+.poverty-explorer .pe-table-footer {
+  padding-top: 15px;
+  color: var(--text-secondary, #718096);
+  font-size: 12px;
+}
+
+.poverty-explorer .pe-status {
+  padding: 20px 0;
+  color: var(--text-secondary, #718096);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.poverty-explorer .pe-data-note {
+  padding: 15px 18px;
+  border: 1px solid #e3eaf2;
+  border-radius: 10px;
+  background: #f7f9fc;
+  color: #63738a;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.poverty-explorer .pe-data-note strong {
+  color: #34465e;
+}
+
+@media (max-width: 1100px) {
+  .poverty-explorer .pe-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .poverty-explorer {
+    gap: 18px;
+  }
+
+  .poverty-explorer .pe-panel {
+    padding: 17px;
+  }
+
+  .poverty-explorer .pe-metrics-grid {
+    gap: 12px;
+  }
+
+  .poverty-explorer .pe-metric-card {
+    padding: 15px;
+  }
+
+  .poverty-explorer .pe-metric-top {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .poverty-explorer .pe-metric-icon {
+    flex-basis: 35px;
+    width: 35px;
+    height: 35px;
+  }
+
+  .poverty-explorer .pe-metric-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .poverty-explorer .pe-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .poverty-explorer .pe-province-row {
+    grid-template-columns: minmax(80px, 100px) minmax(35px, 1fr) 50px;
+    gap: 10px;
+  }
+
+  .poverty-explorer .pe-table th,
+  .poverty-explorer .pe-table td {
+    padding: 12px 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .poverty-explorer .pe-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .poverty-explorer .pe-metric-card {
+    padding: 18px;
+  }
+
+  .poverty-explorer .pe-header {
+    align-items: flex-start;
+  }
+}
+
+
+/* Professional KPI cards */
+.poverty-explorer .pe-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.poverty-explorer .pe-metric-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 178px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid #e5eaf1;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgb(25 45 75 / 3%);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.poverty-explorer .pe-metric-card::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #4779d0;
+  content: "";
+}
+
+.poverty-explorer .pe-metric-card:hover {
+  transform: translateY(-3px);
+  border-color: #d5dfed;
+  box-shadow: 0 8px 22px rgb(25 45 75 / 8%);
+}
+
+.poverty-explorer .pe-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin-bottom: 22px;
+}
+
+.poverty-explorer .pe-metric-label {
+  max-width: 175px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.6;
+  letter-spacing: 0.15px;
+}
+
+.poverty-explorer .pe-metric-icon {
+  display: inline-flex;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e0e9fa;
+  border-radius: 13px;
+  background: #f0f5ff;
+  color: #3869bd;
+}
+
+.poverty-explorer .pe-metric-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.poverty-explorer .pe-metric-value {
+  margin-top: auto;
+  color: #182b49;
+  font-size: clamp(28px, 2.3vw, 35px);
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -1.1px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.poverty-explorer .pe-metric-detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 11px;
+  color: #8491a4;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Subtle accent differences for each indicator */
+.poverty-explorer .pe-metric-card:nth-child(2)::before {
+  background: #d97745;
+}
+
+.poverty-explorer .pe-metric-card:nth-child(2) .pe-metric-icon {
+  border-color: #f4e3d9;
+  background: #fff5ef;
+  color: #c36536;
+}
+
+.poverty-explorer .pe-metric-card:nth-child(3)::before {
+  background: #8a65c4;
+}
+
+.poverty-explorer .pe-metric-card:nth-child(3) .pe-metric-icon {
+  border-color: #e9e0f6;
+  background: #f6f1fc;
+  color: #7953b2;
+}
+
+.poverty-explorer .pe-metric-card:nth-child(4)::before {
+  background: #29967b;
+}
+
+.poverty-explorer .pe-metric-card:nth-child(4) .pe-metric-icon {
+  border-color: #d6eee6;
+  background: #eff9f5;
+  color: #21836b;
+}
+
+/* Responsive layout */
+@media (max-width: 1100px) {
+  .poverty-explorer .pe-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .poverty-explorer .pe-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .poverty-explorer .pe-metric-card {
+    min-height: 164px;
+    padding: 16px;
+    border-radius: 13px;
+  }
+
+  .poverty-explorer .pe-metric-top {
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .poverty-explorer .pe-metric-label {
+    font-size: 11px;
+  }
+
+  .poverty-explorer .pe-metric-icon {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .poverty-explorer .pe-metric-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .poverty-explorer .pe-metric-value {
+    font-size: clamp(24px, 6vw, 30px);
+    letter-spacing: -0.7px;
+  }
+
+  .poverty-explorer .pe-metric-detail {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poverty-explorer .pe-metric-card {
+    transition: none;
+  }
+
+  .poverty-explorer .pe-metric-card:hover {
+    transform: none;
+  }
+}
+
+
+/* Make the selected district stand out in the footer */
+.poverty-explorer .pe-data-note > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border: 1px solid #cfe1d9;
+  border-radius: 8px;
+  background: #edf8f2;
+  color: #176b50;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.poverty-explorer .pe-data-note > span strong {
+  color: #14583f;
+  font-weight: 800;
+}

@@ -310,8 +310,10 @@ function App() {
   const [population, setPopulation] = useState("All");
   const [selectedDistrict, setSelectedDistrict] = useState("Nyamagabe");
   const [dashboardMapZoom, setDashboardMapZoom] = useState(1);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+const [notificationsOpen, setNotificationsOpen] = useState(false);
+const [userMenuOpen, setUserMenuOpen] = useState(false);
+
 const [notifications, setNotifications] = useState([
   {
     id: 1,
@@ -321,17 +323,18 @@ const [notifications, setNotifications] = useState([
     icon: "i",
     read: false,
   },
-  {
-    id: 3,
-    title: "EICV7 dataset unavailable",
-    message:
-      "The EICV7 dataset is not currently available on the official NISR website. This platform uses demo data for demonstration purposes.",
-    icon: "!",
-    read: false,
-  },
 ]);
 
 const hasUnreadNotifications = notifications.some((n) => !n.read);
+
+const handleMarkNotificationsViewed = () => {
+  setNotifications((previous) =>
+    previous.map((notification) => ({
+      ...notification,
+      read: true,
+    }))
+  );
+};
 
   // One state and one request for the district map.
   const [districtMapFeatures, setDistrictMapFeatures] = useState([]);
@@ -903,30 +906,31 @@ const handleExploreDistrict = () => {
       </div>
     ))}
 
-    {hasUnreadNotifications && (
-      <button
-        type="button"
-        className="dropdown-footer-button"
-       onClick={() => {
-  setNotifications((prev) =>
-    prev
-      .filter(
-        (notification) =>
-          notification.title !== "API connection restored" &&
-          notification.title !== "API connection lost"
-      )
-      .map((notification) => ({
-        ...notification,
-        read: true,
-      }))
-  );
 
-  setNotificationsOpen(false);
-}}
-      >
-        Mark as viewed
-      </button>
-    )}
+{hasUnreadNotifications && (
+  <button
+    type="button"
+    className="dropdown-footer-button"
+    onClick={() => {
+      setNotifications((prev) =>
+        prev.filter(
+          (notification) =>
+            notification.title !== "API connection restored" &&
+            notification.title !== "API connection lost" &&
+            notification.title !== "Welcome to RP-FVIP"
+        ).map((notification) => ({
+          ...notification,
+          read: true,
+        }))
+      );
+
+      setNotificationsOpen(false);
+    }}
+  >
+    Mark as viewed
+  </button>
+)}
+
   </div>
 )}
  </div>

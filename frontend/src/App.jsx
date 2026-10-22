@@ -1,6 +1,18 @@
 ﻿
 import { useEffect, useMemo, useState } from "react";
-import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+
+import {
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  X,
+  UserRound,
+  LayoutDashboard,
+  ChartNoAxesCombined,
+  ChevronRight,
+  ShieldCheck,
+} from "lucide-react";
+
 import "./App.css";
 import PovertyExplorer from "./PovertyExplorer";
 import VulnerabilityProfiler from "./VulnerabilityProfiler";
@@ -954,43 +966,59 @@ const handleExploreDistrict = () => {
 
               </button>
 
-              {userMenuOpen && (
-                <div className="topbar-dropdown user-dropdown">
-                  <div className="user-dropdown-heading">
-                    <span className="user-avatar">G</span>
-                    <div>
-                      <strong>Guest User</strong>
-                      <small>Guest access</small>
-                    </div>
-                  </div>
+             
+{userMenuOpen && (
+  <div className="topbar-dropdown user-dropdown">
+    <div className="user-dropdown-heading">
+      <span className="guest-avatar" aria-hidden="true">
+        <UserRound size={23} strokeWidth={1.7} />
+      </span>
 
-                  <div className="dropdown-divider" />
+      <div className="guest-details">
+        <strong>Guest User</strong>
+        <small>
+          <span className="guest-status-dot" />
+          Guest access
+        </small>
+      </div>
+    </div>
 
-                  <button
-                    className="dropdown-menu-item"
-                    onClick={() => handleNavigation("dashboard")}
-                  >
-                    <span>⌂</span>Dashboard
-                  </button>
+    <div className="dropdown-divider" />
 
-                  <button
-                    className="dropdown-menu-item"
-                    onClick={() => handleNavigation("reports")}
-                  >
-                    <span>▤</span>Insights &amp; Reports
-                  </button>
+    <button
+      type="button"
+      className={`dropdown-menu-item ${
+        activePage === "dashboard" ? "is-active" : ""
+      }`}
+      onClick={() => handleNavigation("dashboard")}
+    >
+      <LayoutDashboard size={18} strokeWidth={1.8} />
+      <span>Dashboard</span>
+    </button>
 
-                  <div className="dropdown-divider" />
+    <button
+      type="button"
+      className={`dropdown-menu-item ${
+        activePage === "reports" ? "is-active" : ""
+      }`}
+      onClick={() => handleNavigation("reports")}
+    >
+      <ChartNoAxesCombined size={18} strokeWidth={1.8} />
+      <span>Insights &amp; Reports</span>
+    </button>
 
-                <button type="button"
-                 className="dropdown-close"
-                 aria-label="Close user menu"
-                onClick={() => setUserMenuOpen(false)}
-                >
-                ×
-              </button>
-                </div>
-              )}
+    <div className="dropdown-divider" />
+
+    <button
+      type="button"
+      className="dropdown-close"
+      aria-label="Close user menu"
+      onClick={() => setUserMenuOpen(false)}
+    >
+      ×
+    </button>
+  </div>
+)}
             </div>
           </div>
         </header>

@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useMemo, useState } from "react";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import "./App.css";
@@ -766,11 +766,12 @@ const handleExploreDistrict = () => {
   aria-label="Go to Dashboard"
 >
   <div className="brand-logo">
-    <div className="brand-logo-inner">
-      <span className="brand-sun" />
-      <span className="brand-land" />
-    </div>
-  </div>
+  <img
+    src="/images/rp-fvip-logo.jpeg"
+    alt="RP-FVIP logo"
+    className="brand-logo-image"
+  />
+</div>
 
   <div className="brand-text">
     <strong className="brand-abbreviation">RP-FVIP</strong>

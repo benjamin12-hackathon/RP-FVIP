@@ -2,91 +2,133 @@
 
 ## 1. Purpose
 
-The Rwanda Poverty and Financial Vulnerability Intelligence Platform (RP-FVIP) is a prototype designed to explore household poverty and financial vulnerability indicators through interactive visualizations, descriptive analysis, geographic summaries, and a demonstration machine-learning workflow.
+The Rwanda Poverty and Financial Vulnerability Intelligence Platform (RP-FVIP) is an analytical prototype that combines official aggregate poverty and financial inclusion indicators with separate demonstration household records.
 
-This document describes the current analytical approach, indicator assumptions, model evaluation results reported for the demonstration experiment, and the limitations that must be addressed before operational use.
+The platform supports interactive visualizations, geographic comparisons, descriptive analysis, and a demonstration machine-learning workflow. This document describes the data sources, indicator calculations, analytical assumptions, limitations, and requirements for responsible use.
 
-## 2. Data Source and Status
+## 2. Data Sources and Status
 
-The current prototype uses a small demonstration dataset stored in a SQLite database.
+### 2.1 Official aggregate indicators
 
-The dataset supports development, interface testing, and demonstration of the platform's analytical functionality. It is not an official National Institute of Statistics of Rwanda (NISR) dataset and is not nationally representative.
+The platform integrates available aggregate indicators from two distinct sources:
 
-No results generated from the demonstration dataset should be presented as official national or provincial statistics.
+**National Institute of Statistics of Rwanda (NISR) — EICV7 2023/24**
 
-Before integrating external source data, the project team must verify data provenance, access authorization, documentation, variable definitions, reference periods, and any applicable privacy and usage requirements.
+The integrated dataset includes available poverty, extreme poverty, and multidimensional poverty indicators. The backend retrieves relevant records from the `official_indicators` database table using indicator names, geographic levels, geographic names, source labels, and reference periods.
+
+The integrated data is limited to the indicators and geographic detail available in the database. Its inclusion in RP-FVIP does not imply that all indicators published in the original survey have been integrated.
+
+**Access to Finance Rwanda (AFR) — FinScope Rwanda 2024**
+
+The integrated dataset includes available financial inclusion indicators, including financial inclusion, formal financial services, banking, financial exclusion, and related financial service categories.
+
+FinScope indicators are attributed to FinScope 2024 rather than incorrectly attributed to NISR EICV7.
+
+Official source references:
+
+- NISR EICV7: https://www.statistics.gov.rw/data-sources/surveys/EICV/integrated-household-living-conditions-survey-7-eicv-7
+- FinScope Rwanda 2024: https://afr.rw/downloads/rwanda-finscope-2024-report/
+
+### 2.2 Demonstration household records
+
+The database also contains a separate `households` table used by selected household-level analytical and development workflows.
+
+These records are demonstration data and are not verified official NISR household microdata. Their size, coverage, and representativeness must not be assumed to reflect the Rwandan population.
+
+Results calculated from these records must not be presented as official national, provincial, or district estimates.
+
+### 2.3 Data provenance and interpretation
+
+The source, reference period, indicator definition, geographic level, and calculation method should be considered when interpreting every indicator.
+
+Where the integrated dataset contains a derived indicator, its derivation must be distinguished from a value published directly by the source. Source references alone do not establish that every stored value has been independently verified against the original report.
 
 ## 3. Data Preparation and Quality Assurance
 
-The analytical workflow should assess data quality before producing indicators or training models. Relevant checks include:
+Before producing indicators or training analytical models, the workflow should assess:
 
-- Missing values in selected variables.
+- Missing values and incomplete records.
 - Duplicate household identifiers.
-- Valid ranges and plausible values for numeric indicators.
+- Valid ranges and plausible numeric values.
 - Consistency of categorical and binary variable coding.
 - Distribution of the target variable.
 - Potential target leakage in model predictors.
-- Consistency between geographic identifiers and geographic classifications.
+- Consistency of geographic identifiers and classifications.
+- Agreement between stored indicators and their documented source definitions.
 
-Missing values and data limitations must be documented rather than silently interpreted as meaningful observations.
+Cleaning, exclusions, transformations, derivations, and assumptions should be documented to support reproducibility.
 
-Any cleaning, exclusions, transformations, and assumptions should be recorded to support reproducibility and interpretation.
+Missing or unavailable values should not be silently interpreted as zero or as evidence that a condition does not exist.
 
-## 4. Indicator Definitions
+## 4. Official Indicator Definitions and Calculations
 
-The indicators below describe the calculations used by the current demonstration workflow. Their validity depends on the actual variable definitions, coding conventions, and records available in the dataset.
+The following describes calculations visible in the current backend implementation. The validity of each result depends on the underlying stored data and source definitions.
 
-### 4.1 Poverty Rate
+### 4.1 Poverty indicators
 
-The demonstration poverty rate is calculated as:
+The backend retrieves available poverty indicators from `official_indicators`, using the source label associated with NISR and the relevant geographic level and name.
 
-`Mean(poverty_status) × 100`
+The integrated indicators include poverty rate and other available measures, such as extreme poverty and multidimensional poverty indicators.
 
-This calculation assumes that `poverty_status` is consistently coded as:
+These values should be interpreted according to their source definitions and reference periods. The platform should not substitute demonstration household calculations for official aggregate estimates.
 
-- `1` — classified as poor.
-- `0` — classified as non-poor.
+### 4.2 Financial inclusion
 
-Under these assumptions, the mean multiplied by 100 gives the percentage of records classified as poor.
+The backend retrieves available FinScope 2024 indicators from `official_indicators`.
 
-This is a record-level descriptive measure for the available demonstration dataset. It should not be interpreted as an official poverty headcount rate unless the underlying data, poverty definition, population coverage, and estimation methodology support that interpretation.
+At the national level, the financial inclusion value is retrieved from the stored `Financial Inclusion` indicator.
 
-### 4.2 Financial Inclusion Rate
+For provincial results, the current implementation can derive financial inclusion as:
 
-The demonstration financial inclusion rate is calculated as:
+`Financial Inclusion = 100 − Excluded`
 
-`Mean(has_financial_account) × 100`
+This derivation is valid only if the source's financial inclusion and exclusion categories are complementary and use the same denominator and reference population.
 
-This calculation assumes that `has_financial_account` is consistently coded as:
+### 4.3 Formal financial access
 
-- `1` — the record meets the dataset's definition of having a financial account.
-- `0` — the record does not meet that definition.
+The current provincial calculation can derive formal access as:
 
-The result represents the percentage of eligible records coded as having an account, provided that the variable is correctly defined and coded.
+`Formal Access = Banked + Other Formal (non-bank)`
 
-Account ownership alone does not capture every dimension of financial inclusion, such as usage, access to suitable financial services, affordability, or service quality. The indicator should therefore be interpreted according to its documented definition.
+This calculation assumes that the two categories are mutually exclusive, use compatible denominators, and correspond to the source's definition of formal access.
 
-### 4.3 Interpretation of Indicators
+The derived result must not be described as a separately published value unless the original source confirms that status.
 
-Both indicators depend on the variables and records included in the calculation. Missing or incorrectly coded values, selection effects, and differences in coverage may affect the results.
+### 4.4 Missing and unavailable indicators
 
-For analyses based on complex household surveys, the appropriate survey weights and official estimation procedures must be considered where applicable.
+The backend returns unavailable values for selected household vulnerability measures when verified data is not available for the requested analysis.
 
-## 5. Geographic Analysis
+An unavailable value is not equivalent to zero. The absence of a value means that the platform does not currently have a verified estimate to display for that measure and selection.
 
-The API groups available household records by province and calculates the number of records and the mean poverty indicator for each group.
+## 5. Demonstration Household Analysis
 
-These summaries allow users to explore geographic patterns in the demonstration dataset. However, small group sizes can produce extreme percentages and unstable comparisons.
+Selected backend endpoints retrieve records from the `households` table and calculate descriptive summaries using fields available in those records.
 
-Geographic results must be interpreted in light of sample coverage, the quality of geographic identifiers, and the number of observations in each group. Demonstration results must not be treated as representative provincial estimates.
+For example, the backend includes a grouping calculation that reports the number of records and the mean of `poverty_status` for each `financial_access` category.
 
-Before using official data, the project team should verify geographic classifications, document aggregation rules, and apply appropriate survey estimation methods where required.
+Where `poverty_status` is consistently coded as 1 for poor and 0 for non-poor, its mean multiplied by 100 represents the percentage of included records coded as poor.
 
-## 6. Machine-Learning Demonstration
+This is a descriptive calculation for the available records. It is not an official poverty headcount rate unless the underlying data, poverty definition, population coverage, survey design, and estimation procedures justify that interpretation.
 
-The prototype includes Logistic Regression and Random Forest experiments to demonstrate a possible analytical workflow for examining patterns associated with the observed poverty classification.
+Any household-level financial account or vulnerability calculation must likewise follow the documented definition and coding of the underlying field.
 
-The following evaluation metrics were reported for the demonstration experiment:
+## 6. Geographic Analysis
+
+The platform uses geographic identifiers and available aggregate indicators to support province and district exploration.
+
+The backend maps geographic names to the naming conventions used by the respective sources. For example, NISR EICV7 and MPI indicators may use shortened province names, while FinScope may use full province names.
+
+Geographic comparisons must account for differences in source definitions, reference periods, coverage, rounding, and available geographic detail.
+
+Demonstration household summaries may be unstable when group sizes are small. They must not be treated as representative provincial or district estimates.
+
+Derived geographic values should be documented, and unavailable estimates should remain clearly identified as unavailable.
+
+## 7. Machine-Learning Demonstration
+
+The prototype includes Logistic Regression and Random Forest experiments intended to demonstrate a possible analytical workflow for examining patterns associated with an observed poverty classification.
+
+The following metrics were reported in the existing demonstration documentation:
 
 | Metric | Logistic Regression | Random Forest |
 |---|---:|---:|
@@ -95,76 +137,73 @@ The following evaluation metrics were reported for the demonstration experiment:
 | Recall | 10% | 10% |
 | F1-score | 18.2% | 13.3% |
 
-These figures are reported demonstration results. They should be verified against the underlying evaluation output before being used in formal reporting.
+These are reported demonstration results. They have not been independently verified in this document against the underlying evaluation output and should be checked before formal reporting.
 
-### 6.1 Interpretation of Results
+Accuracy measures the proportion of evaluated cases classified correctly. Precision measures the proportion of predicted positive cases that were actually positive. Recall measures the proportion of actual positive cases identified. The F1-score combines precision and recall.
 
-The reported metrics illustrate why accuracy alone is insufficient to evaluate a poverty-classification model.
+The reported recall of 10% for both models indicates that each model identified only a small proportion of positive cases in the evaluated test set, assuming the metrics and positive-class definition are correct.
 
-- **Accuracy** measures the proportion of evaluated cases classified correctly.
-- **Precision** measures the proportion of cases predicted as positive that were actually positive.
-- **Recall** measures the proportion of actual positive cases identified by the model.
-- **F1-score** combines precision and recall into a single measure.
+A small demonstration dataset can produce unstable performance estimates. These figures do not establish that either model is suitable for operational poverty prediction.
 
-The reported recall of 10% for both models indicates that each identified only a small proportion of positive cases in the evaluated test set. The Logistic Regression result also illustrates that high precision can coexist with low recall.
+### 7.1 Further evaluation requirements
 
-Because the demonstration dataset is small, these results may be sensitive to the particular train-test split and class distribution. They do not establish that either model is suitable for real-world poverty prediction.
+Before drawing conclusions about model performance, document:
 
-### 6.2 Requirements for Further Evaluation
-
-Before drawing conclusions about model performance, further evaluation should document:
-
-- The dataset and target definition used.
-- The train-test splitting procedure and random seed where applicable.
+- The dataset and target definition.
+- The train-test splitting procedure and random seed, where applicable.
 - The number and distribution of positive and negative cases.
 - The predictors supplied to each model.
-- The treatment of missing values and categorical variables.
-- Relevant baseline comparisons and suitable evaluation metrics.
-- The stability of results under appropriate validation procedures.
+- The handling of missing values and categorical variables.
+- The evaluation procedure and baseline comparisons.
+- The stability of results under suitable validation procedures.
 
-Where data are limited or imbalanced, evaluation methods should be selected carefully to reduce the risk of misleading conclusions.
+Evaluation should account for class imbalance, possible data leakage, and the consequences of false-positive and false-negative classifications.
 
-## 7. Target Leakage Prevention
+## 8. Target Leakage Prevention
 
-Target leakage occurs when model predictors contain information that directly reveals the target or would not legitimately be available at the intended time of prediction.
+Target leakage occurs when model predictors reveal information about the target that would not legitimately be available at the intended time of prediction.
 
-Variables used to construct the poverty target, or closely related consumption and expenditure measures, must be reviewed carefully before inclusion. They should be excluded when their use would reveal the target or produce an invalid evaluation.
+Variables used to construct the poverty target, or closely related consumption and expenditure measures, must be reviewed carefully before inclusion. They should be excluded when their use would reveal the target or invalidate the evaluation.
 
-Predictor selection should follow a documented rationale based on the intended analytical purpose, data availability, timing, and risk of leakage.
+Preprocessing, feature selection, and other data-dependent transformations should be performed without allowing information from the test set to influence model training.
 
-All preprocessing and feature selection steps must also be performed in a way that prevents information from the test data from influencing model training.
+Predictor selection should follow a documented rationale based on the analytical purpose, data availability, timing, and risk of leakage.
 
-## 8. Limitations
+## 9. Limitations
 
-The current prototype has the following limitations:
+The current platform has the following limitations:
 
-- It uses a small demonstration dataset rather than an official, nationally representative household dataset.
-- Indicator validity depends on consistent coding and verified variable definitions.
-- Geographic summaries may be unstable where group sizes are small.
-- Reported model metrics may be sensitive to the small evaluation sample and class distribution.
-- The model has not been validated for operational, household-level, or policy decision-making.
-- The current indicators do not necessarily capture every dimension of poverty or financial vulnerability.
-- The platform does not establish that observed associations are causal.
-- Results must not be treated as confirmed assessments of individual households.
+- Official aggregate indicators are available only for the measures and geographic levels integrated into the database.
+- Demonstration household records are not verified official NISR microdata and are not established as nationally representative.
+- Derived financial inclusion indicators depend on assumptions about category definitions and denominators.
+- Differences in source definitions, coverage, geographic classifications, and rounding may affect comparisons.
+- Some household vulnerability indicators are unavailable and must not be interpreted as zero.
+- The reported machine-learning metrics require verification against the underlying evaluation output.
+- Model performance may be sensitive to the demonstration dataset, class distribution, and evaluation procedure.
+- The platform does not establish causal relationships.
+- The outputs have not been validated for operational household-level or policy decision-making.
 
-## 9. Responsible Use and Future Validation
+## 10. Responsible Use and Future Validation
 
-Before the platform is used for substantive research or policy analysis, the project team should:
+Before using the platform for substantive research or policy analysis, the project team should:
 
-1. Integrate authorized source data with documented provenance and variable definitions.
-2. Verify data quality, population coverage, geographic classifications, and reference periods.
-3. Apply appropriate survey weights and estimation procedures where required.
-4. Document indicator construction and all analytical assumptions.
-5. Evaluate models using suitable validation procedures and metrics.
-6. Assess potential bias, uncertainty, privacy risks, and the consequences of classification errors.
-7. Maintain clear distinctions between descriptive statistics, model outputs, and official statistical estimates.
+1. Verify source provenance, data access permissions, variable definitions, and reference periods.
+2. Reconcile stored aggregate indicators with the relevant source publications.
+3. Document all derived indicators, assumptions, denominators, and rounding rules.
+4. Assess missing values, geographic consistency, and data quality.
+5. Apply appropriate survey weights and estimation procedures where required.
+6. Verify machine-learning results and use suitable validation procedures.
+7. Assess bias, uncertainty, privacy risks, and the consequences of classification errors.
+8. Maintain clear distinctions between official aggregate statistics, derived indicators, demonstration calculations, and model outputs.
 
-Any future use of household-level predictions should include appropriate human oversight and safeguards against treating model outputs as definitive judgments about households.
+Any future use of household-level predictions should include appropriate human oversight and safeguards against treating model outputs as definitive judgments about individual households.
 
-## 10. Conclusion
+## 11. Conclusion
 
-RP-FVIP is currently a demonstration and development prototype for exploring poverty and financial vulnerability indicators through an interactive analytical platform.
+RP-FVIP is an analytical prototype that combines selected official aggregate indicators from NISR EICV7 2023/24 and FinScope Rwanda 2024 with separate demonstration household records.
 
-Its current outputs illustrate platform functionality and an initial analytical workflow. They are not a substitute for official statistics, verified survey analysis, or professional policy assessment.
+Its purpose is to support exploration of available poverty and financial inclusion indicators and demonstrate selected analytical workflows.
 
-Further data integration, methodological verification, and validation are required before the platform's outputs can support substantive conclusions about poverty or financial vulnerability in Rwanda.
+Official aggregate indicators, derived values, demonstration household calculations, and experimental model outputs serve different purposes and must remain clearly distinguished.
+
+Further source verification, data quality assurance, methodological documentation, and model evaluation are required before the platform can be considered suitable for broader operational statistical use.

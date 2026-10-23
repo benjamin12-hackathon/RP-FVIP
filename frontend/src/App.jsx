@@ -662,22 +662,42 @@ setProvinceChartData(
         );
 
 
+
 const selectionHasUnsupportedFilters =
-  district !== "All Districts" ||
-  area !== "All" ||
-  population !== "All";
+  area !== "All" || population !== "All";
 
 const summaryIsAvailable =
-  dashboardSummary && !selectionHasUnsupportedFilters;
+  dashboardSummary &&
+  district === "All Districts" &&
+  !selectionHasUnsupportedFilters;
 
+const selectedDistrictPoverty = officialDistrictData.find(
+  (item) =>
+    normalizeName(item.district) === normalizeName(district)
+);
+
+const districtPovertyAvailable =
+  district !== "All Districts" &&
+  selectedDistrictPoverty != null &&
+  selectedDistrictPoverty.poverty_rate != null &&
+  Number.isFinite(Number(selectedDistrictPoverty.poverty_rate)) &&
+  !selectionHasUnsupportedFilters;
 
 const kpis = {
   poverty:
-    summaryLoading
-      ? "Loading…"
-      : summaryIsAvailable && dashboardSummary.poverty_rate != null
-        ? `${Number(dashboardSummary.poverty_rate).toFixed(1)}%`
-        : "—",
+    summaryLoading || officialDistrictLoading
+      ? district !== "All Districts" && !officialDistrictLoading
+        ? districtPovertyAvailable
+          ? `${Number(selectedDistrictPoverty.poverty_rate).toFixed(1)}%`
+          : "—"
+        : "Loading…"
+      : district !== "All Districts"
+        ? districtPovertyAvailable
+          ? `${Number(selectedDistrictPoverty.poverty_rate).toFixed(1)}%`
+          : "—"
+        : summaryIsAvailable && dashboardSummary.poverty_rate != null
+          ? `${Number(dashboardSummary.poverty_rate).toFixed(1)}%`
+          : "—",
 
   extreme:
     summaryLoading
@@ -702,12 +722,17 @@ const kpis = {
         ? `${Number(dashboardSummary.financial_inclusion_rate).toFixed(1)}%`
         : "—",
 
-  scope: summaryIsAvailable
-    ? dashboardSummary.household_count != null
-      ? `${dashboardSummary.household_count} households`
-      : `${dashboardSummary.poverty_source || "Official statistics"} · ${dashboardSummary.reference_period || "Period not specified"}`
-    : "No verified data for this selection",
+  scope: district !== "All Districts"
+    ? districtPovertyAvailable
+      ? `${district} • NISR EICV7`
+      : "No verified data for this selection"
+    : summaryIsAvailable
+      ? dashboardSummary.household_count != null
+        ? `${dashboardSummary.household_count} households`
+        : `${dashboardSummary.poverty_source || "Official statistics"} · ${dashboardSummary.reference_period || "Period not specified"}`
+      : "No verified data for this selection",
 };
+
 
 
 const selectionScope = getSelectionScope(

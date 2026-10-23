@@ -173,6 +173,24 @@ The application communicates unavailable data rather than presenting unsupported
 
 Official aggregate statistics and demonstration household-level calculations serve different purposes and must remain clearly distinguished.
 
+### 7.4 Data Files and Reproducibility
+
+The repository includes the following data files in `data/demo/`:
+
+| File | Description |
+|---|---|
+| `rp_fvip_demo.db` | SQLite database used by the backend. It contains the integrated aggregate indicators and separate demonstration household records. |
+| `cleaned_demo_households.csv` | Demonstration household dataset for selected analytical and development workflows. |
+| `final_analytical_demo.csv` | Demonstration dataset prepared for analytical workflows. |
+
+The CSV files contain demonstration data and must not be interpreted as verified official NISR household microdata. The SQLite database combines available aggregate indicators from NISR EICV7 2023/24 and FinScope Rwanda 2024 with separate demonstration household records.
+
+The original source publications are linked in Section 7.1. They provide the references for the official aggregate indicators; the demonstration records are not a substitute for the original survey microdata.
+
+For local development, the backend reads the SQLite database at `data/demo/rp_fvip_demo.db`. The project source code and the listed data files are available in this repository.
+
+**Data interpretation:** Users should verify indicator definitions, source attribution, geographic coverage, reference periods, and any derived calculations before using results for research or policy decisions.
+
 ## 8. Data Disclaimer
 
 **RP-FVIP includes official aggregate indicators and separate demonstration household records. Not every analytical output represents an official statistical estimate.**

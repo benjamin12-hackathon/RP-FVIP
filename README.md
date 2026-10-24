@@ -14,6 +14,8 @@ RP-FVIP brings together interactive dashboards, geographic exploration, indicato
 
 The platform aims to make statistical information easier to explore and interpret, helping users identify geographic patterns, compare available indicators, and understand how data analysis can support evidence-informed poverty reduction and financial inclusion initiatives.
 
+Furthermore, this submitted project is our own.
+
 ## 2. Problem Statement
 
 Understanding poverty and financial vulnerability requires more than viewing isolated statistics. Policymakers, researchers, development practitioners, and other stakeholders need accessible ways to explore indicators, compare geographic areas, examine vulnerability-related characteristics, and understand the evidence behind analytical results.
@@ -228,7 +230,7 @@ RP-FVIP is intended to support data exploration and evidence-informed analysis. 
 - Additional data validation, source documentation, and quality assurance may be required as the platform evolves.
 - Deployment performance may vary depending on hosting-service availability.
 
-These limitations are communicated to encourage appropriate interpretation and responsible use of the platform.
+Therefore, these limitations are communicated to encourage appropriate interpretation and responsible use of the platform.
 
 ## 11. Future Work
 
@@ -247,7 +249,7 @@ Potential areas for improvement include:
 
 AI assistance was used during development to support aspects of coding, troubleshooting, and documentation.
 
-The project team remains responsible for reviewing, testing, and validating the implementation, data handling, and analytical outputs.
+Our team remains responsible for reviewing, testing, and validating the implementation, data handling, and analytical outputs.
 
 The final hackathon submission should follow the competition's applicable AI-use disclosure requirements.
 

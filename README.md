@@ -262,10 +262,9 @@ The platform integrates official aggregate indicators from NISR EICV7 2023/24 an
 It provides a foundation for exploring poverty and financial inclusion indicators through interactive visualizations and geographic comparisons. Further validation, expanded data integration, and additional methodological documentation may be needed for broader operational statistical use.
 
 ---
-
+**Team members:** BUCYANAYANDI Benjamin and NIYORUGIRA Severien 
 **Project:** RP-FVIP — Rwanda Poverty & Financial Vulnerability Intelligence Platform
 **Repository:** https://github.com/benjamin12-hackathon/RP-FVIP
 **Live Platform:** https://rp-fvip.vercel.app/
 **Backend API:** https://rp-fvip.onrender.com
 **API Documentation:** https://rp-fvip.onrender.com/docs (available when the backend is running)
-**Team members:**- BUCYANAYANDI Benjamin and NIYORUGIRA Severien 

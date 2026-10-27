@@ -268,3 +268,9 @@ It provides a foundation for exploring poverty and financial inclusion indicator
 **Live Platform:** https://rp-fvip.vercel.app/
 **Backend API:** https://rp-fvip.onrender.com
 **API Documentation:** https://rp-fvip.onrender.com/docs (available when the backend is running)
+
+## Demo Video
+
+Watch the RP-FVIP platform demonstration:
+
+[Watch the RP-FVIP Demo Video](RP-FVIP-Demo-Video.webm)

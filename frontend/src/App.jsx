@@ -1054,7 +1054,7 @@ const handleExploreDistrict = () => {
               <section className="page-header">
                 <div>
                   <h1>
-                    Welcome to the Rwanda Poverty &amp; Vulnerability
+                    Welcome to the Rwanda Poverty &amp; Financial Vulnerability
                     Intelligence Platform
                   </h1>
                   <p>

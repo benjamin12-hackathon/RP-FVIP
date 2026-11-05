@@ -804,7 +804,7 @@ const handleExploreDistrict = () => {
 >
   <div className="brand-logo">
   <img
-    src="/images/rp-fvip-logo.jpeg"
+    src="/images/rp-fvip-logo.png"
     alt="RP-FVIP logo"
     className="brand-logo-image"
   />
